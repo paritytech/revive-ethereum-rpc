@@ -66,7 +66,7 @@ lazy_static! {
 /// Read the OpenRPC specs, and inject extra methods and legacy aliases.
 pub fn read_specs() -> anyhow::Result<OpenRpc> {
     let content = include_str!("../openrpc.json");
-    let mut specs: OpenRpc = serde_json::from_str(&content)?;
+    let mut specs: OpenRpc = serde_json::from_str(content)?;
 
     // Inject legacy aliases.
     inject_legacy_aliases(&mut specs);
@@ -75,7 +75,9 @@ pub fn read_specs() -> anyhow::Result<OpenRpc> {
     specs.methods.push(RefOr::Inline(Method {
         name: "net_version".to_string(),
         summary: Some("The string value of current network id".to_string()),
-        result: Some(RefOr::Reference { reference: "String".to_string() }),
+        result: Some(RefOr::Reference {
+            reference: "String".to_string(),
+        }),
         ..Default::default()
     }));
 
@@ -88,12 +90,17 @@ pub fn inject_legacy_aliases(specs: &mut OpenRpc) {
         let schema = specs.get_schema_mut(alias).unwrap();
         match &mut schema.contents {
             SchemaContents::Object(o) | SchemaContents::Literal(Literal::Object(o)) => {
-                o.legacy_aliases =
-                    mapping.into_iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
-            },
+                o.legacy_aliases = mapping
+                    .iter()
+                    .map(|(k, v)| (k.to_string(), v.to_string()))
+                    .collect();
+            }
             _ => {
-                panic!("Alias should be an object got {:?} instead", schema.contents);
-            },
+                panic!(
+                    "Alias should be an object got {:?} instead",
+                    schema.contents
+                );
+            }
         }
     }
 }
@@ -135,10 +142,16 @@ impl TypeGenerator {
         let mut generated =
             HashSet::from_iter(["notFound"].into_iter().map(|name| name.to_pascal_case()));
 
-        generated.extend(PRIMITIVE_MAPPINGS.keys().map(|name| reference_to_name(name)));
+        generated.extend(
+            PRIMITIVE_MAPPINGS
+                .keys()
+                .map(|name| reference_to_name(name)),
+        );
         generated.extend(PRIMITIVE_MAPPINGS.values().map(|name| name.to_string()));
-        let filtered_method_names =
-            SUPPORTED_ETH_METHODS.iter().map(|name| name.to_string()).collect();
+        let filtered_method_names = SUPPORTED_ETH_METHODS
+            .iter()
+            .map(|name| name.to_string())
+            .collect();
 
         Self {
             collected: Default::default(),
@@ -158,9 +171,14 @@ impl TypeGenerator {
             .collect::<Vec<_>>();
 
         if methods.len() != self.filtered_method_names.len() {
-            let available =
-                methods.iter().map(|method| method.name.clone()).collect::<HashSet<_>>();
-            let missing = self.filtered_method_names.difference(&available).collect::<Vec<_>>();
+            let available = methods
+                .iter()
+                .map(|method| method.name.clone())
+                .collect::<HashSet<_>>();
+            let missing = self
+                .filtered_method_names
+                .difference(&available)
+                .collect::<Vec<_>>();
             panic!("Missing methods: {missing:?}");
         }
 
@@ -239,21 +257,30 @@ impl TypeGenerator {
         let content = match &schema.contents {
             &SchemaContents::Literal(Literal::Object(ref o)) | &SchemaContents::Object(ref o) => {
                 TypeContent::Struct(Fields::from(o, self))
-            },
+            }
             SchemaContents::AllOf { all_of } => {
                 TypeContent::Struct(Fields::from_all_of(all_of, self))
-            },
+            }
             &SchemaContents::AnyOf { any_of: ref items }
             | &SchemaContents::OneOf { one_of: ref items } => {
                 TypeContent::Enum(Variants::from_one_of(items, self))
-            },
-            &SchemaContents::Literal(Literal::Array(ArrayLiteral { items: Some(ref schema) })) => {
-                let name = self.type_info(schema).expect("Anonymous array type not supported").name;
+            }
+            &SchemaContents::Literal(Literal::Array(ArrayLiteral {
+                items: Some(ref schema),
+            })) => {
+                let name = self
+                    .type_info(schema)
+                    .expect("Anonymous array type not supported")
+                    .name;
 
-                let type_info = TypeInfo { name, required: Required::Yes, array: true };
+                let type_info = TypeInfo {
+                    name,
+                    required: Required::Yes,
+                    array: true,
+                };
 
                 TypeContent::TypeAlias(type_info)
-            },
+            }
             &SchemaContents::Literal(Literal::String(StringLiteral {
                 min_length: None,
                 max_length: None,
@@ -263,14 +290,20 @@ impl TypeGenerator {
             })) => TypeContent::UntaggedEnum(enumeration.clone()),
             v => {
                 panic!("Unsupported type {name} {v:#?}")
-            },
+            }
         };
 
         TypePrinter { name, doc, content }
     }
 
     fn generate_rpc_method(&mut self, buffer: &mut String, method: &Method) {
-        let Method { ref summary, ref name, ref params, ref result, .. } = method;
+        let Method {
+            ref summary,
+            ref name,
+            ref params,
+            ref result,
+            ..
+        } = method;
         writeln!(@doc buffer, summary);
 
         let result = result
@@ -287,21 +320,31 @@ impl TypeGenerator {
         let parameters = params
             .iter()
             .map(RefOr::unwrap_inline)
-            .map(|ContentDescriptor { name, required, schema, .. }| {
-                let name_arg = name.to_snake_case().replace(' ', "_");
-                let name_type = self
-                    .type_info(schema)
-                    .expect("Parameter type should be defined")
-                    .set_required(*required)
-                    .get_type();
-                format!("{name_arg}: {name_type}")
-            })
+            .map(
+                |ContentDescriptor {
+                     name,
+                     required,
+                     schema,
+                     ..
+                 }| {
+                    let name_arg = name.to_snake_case().replace(' ', "_");
+                    let name_type = self
+                        .type_info(schema)
+                        .expect("Parameter type should be defined")
+                        .set_required(*required)
+                        .get_type();
+                    format!("{name_arg}: {name_type}")
+                },
+            )
             .collect::<Vec<_>>()
             .join(", ");
 
         writeln!(buffer, "#[method(name = \"{name}\")]");
         let method_name = name.trim_start_matches(&self.prefix).to_snake_case();
-        writeln!(buffer, "async fn {method_name}(&self, {parameters}) -> RpcResult<{result}>;");
+        writeln!(
+            buffer,
+            "async fn {method_name}(&self, {parameters}) -> RpcResult<{result}>;"
+        );
     }
 
     /// Collect the type if it's not yet generated or collected.
@@ -325,18 +368,34 @@ impl TypeNameProvider for TypeGenerator {
         match &schema.contents {
             SchemaContents::Reference { reference } => {
                 let type_name = reference_to_name(reference);
-                self.collect(&type_name, ReferenceOrSchema::Reference(reference.to_string()));
+                self.collect(
+                    &type_name,
+                    ReferenceOrSchema::Reference(reference.to_string()),
+                );
                 Some(type_name.into())
-            },
-            SchemaContents::Literal(Literal::Array(ArrayLiteral { items: Some(ref schema) })) => {
-                let name = self.type_info(schema).expect("Anonymous array type not supported").name;
+            }
+            SchemaContents::Literal(Literal::Array(ArrayLiteral {
+                items: Some(ref schema),
+            })) => {
+                let name = self
+                    .type_info(schema)
+                    .expect("Anonymous array type not supported")
+                    .name;
 
-                Some(TypeInfo { name, required: Required::Yes, array: true })
-            },
+                Some(TypeInfo {
+                    name,
+                    required: Required::Yes,
+                    array: true,
+                })
+            }
             SchemaContents::AllOf { all_of } => Some(
                 all_of
                     .iter()
-                    .map(|s| self.type_info(s).expect("Anonymous all_of type not supported").name)
+                    .map(|s| {
+                        self.type_info(s)
+                            .expect("Anonymous all_of type not supported")
+                            .name
+                    })
                     .collect::<Vec<_>>()
                     .join("And")
                     .into(),
@@ -347,10 +406,14 @@ impl TypeNameProvider for TypeGenerator {
                 let items = items
                     .iter()
                     .filter_map(|s| {
-                        let info = self.type_info(s).expect("Anonymous any_of type not supported");
+                        let info = self
+                            .type_info(s)
+                            .expect("Anonymous any_of type not supported");
 
                         if info.name == "Null" || info.name == "NotFound" {
-                            required = Required::No { skip_if_null: false };
+                            required = Required::No {
+                                skip_if_null: false,
+                            };
                             None
                         } else {
                             Some(info.name)
@@ -363,8 +426,12 @@ impl TypeNameProvider for TypeGenerator {
                     self.collect(&name, ReferenceOrSchema::Schema(schema.clone()));
                 }
 
-                Some(TypeInfo { name, required, array: false })
-            },
+                Some(TypeInfo {
+                    name,
+                    required,
+                    array: false,
+                })
+            }
             SchemaContents::Literal(Literal::Null) => Some("Null".into()),
 
             // Use Type0, Type1, Type2, ... for String that have a single digit pattern.
@@ -378,13 +445,13 @@ impl TypeNameProvider for TypeGenerator {
                 let type_id = format!("Type{}", &pattern[3..4]);
 
                 Some(type_id.into())
-            },
+            }
 
             SchemaContents::Literal(Literal::Boolean) => Some("bool".into()),
             SchemaContents::Object(_) => None,
             v => {
                 panic!("No type name for {v:#?}");
-            },
+            }
         }
     }
 }
@@ -473,7 +540,10 @@ mod test {
         )
         .unwrap();
 
-        assert_eq!(&generator.type_info(&schema).unwrap().get_type(), "Option<Address>");
+        assert_eq!(
+            &generator.type_info(&schema).unwrap().get_type(),
+            "Option<Address>"
+        );
     }
 
     #[test]
@@ -482,7 +552,9 @@ mod test {
         let mut generator = TypeGenerator::new();
         let res = generator.generate_type(
             "Transaction4844Signed".to_string(),
-            specs.get_schema("#/components/schemas/Transaction4844Signed").unwrap(),
+            specs
+                .get_schema("#/components/schemas/Transaction4844Signed")
+                .unwrap(),
         );
         let mut buffer = String::new();
         res.print(&mut buffer);
@@ -513,7 +585,9 @@ mod test {
         let mut generator = TypeGenerator::new();
         let res = generator.generate_type(
             "TransactionUnsigned".to_string(),
-            specs.get_schema("#/components/schemas/TransactionUnsigned").unwrap(),
+            specs
+                .get_schema("#/components/schemas/TransactionUnsigned")
+                .unwrap(),
         );
         let mut buffer = String::new();
         res.print(&mut buffer);
@@ -562,7 +636,9 @@ mod test {
         let mut generator = TypeGenerator::new();
         let res = generator.generate_type(
             "FilterTopics".to_string(),
-            specs.get_schema("#/components/schemas/FilterTopics").unwrap(),
+            specs
+                .get_schema("#/components/schemas/FilterTopics")
+                .unwrap(),
         );
         let mut buffer = String::new();
         res.print(&mut buffer);
@@ -581,7 +657,9 @@ mod test {
         let mut generator = TypeGenerator::new();
         let res = generator.generate_type(
             "Transaction".to_string(),
-            specs.get_schema("#/components/schemas/GenericTransaction").unwrap(),
+            specs
+                .get_schema("#/components/schemas/GenericTransaction")
+                .unwrap(),
         );
 
         let mut buffer = String::new();

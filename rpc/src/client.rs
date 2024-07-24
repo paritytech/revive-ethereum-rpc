@@ -88,7 +88,10 @@ struct BlockCache<const N: usize> {
 #[derive(Debug)]
 enum EvmExtrinsic {
     /// The `pallet_contracts_evm::call` extrinsic.
-    Instantiate { payload: EthInstantiate, address_bytes: Vec<u8> },
+    Instantiate {
+        payload: EthInstantiate,
+        address_bytes: Vec<u8>,
+    },
 
     /// The `pallet_contracts_evm::instantiate` extrinsic.
     Call(EthCall),
@@ -112,7 +115,10 @@ impl EvmExtrinsic {
                 contract_address: None,
                 gas_price: call.eth_gas_price,
             }),
-            EvmExtrinsic::Instantiate { payload, address_bytes } => {
+            EvmExtrinsic::Instantiate {
+                payload,
+                address_bytes,
+            } => {
                 // Calculate the contract address from the payload
                 let code_hash = primitives::Hashing::hash(&payload.code);
                 let address = primitives::MultiAddress::decode(&mut address_bytes.as_ref()).ok()?;
@@ -135,7 +141,7 @@ impl EvmExtrinsic {
                     contract_address: Some(contract_address),
                     gas_price: payload.eth_gas_price,
                 })
-            },
+            }
         }
     }
 }
@@ -193,7 +199,7 @@ impl<const N: usize> BlockCache<N> {
                 self.blocks_by_number.remove(&block.number());
                 if let Some(entries) = self.receipt_hashes_by_block_and_index.remove(&hash) {
                     for hash in entries.values() {
-                        self.receipts_by_hash.remove(&hash);
+                        self.receipts_by_hash.remove(hash);
                     }
                 }
             }
@@ -237,10 +243,21 @@ impl ClientInner {
 
         let rpc = LegacyRpcMethods::<SrcChainConfig>::new(RpcClient::new(rpc_client.clone()));
 
-        let (native_to_evm_ratio, chain_id, max_block_weight) =
-            tokio::try_join!(native_to_evm_ratio(&rpc), chain_id(&api), max_block_weight(&api))?;
+        let (native_to_evm_ratio, chain_id, max_block_weight) = tokio::try_join!(
+            native_to_evm_ratio(&rpc),
+            chain_id(&api),
+            max_block_weight(&api)
+        )?;
 
-        Ok(Self { api, rpc_client, rpc, cache, chain_id, max_block_weight, native_to_evm_ratio })
+        Ok(Self {
+            api,
+            rpc_client,
+            rpc,
+            cache,
+            chain_id,
+            max_block_weight,
+            native_to_evm_ratio,
+        })
     }
 
     /// Convert a native balance to an EVM balance.
@@ -260,22 +277,32 @@ impl ClientInner {
         let extrinsics = extrinsics.iter().flat_map(|ext| {
             let ext = ext.ok()?;
 
-            let payload: EvmExtrinsic = if let Ok(Some(payload)) =
-                ext.as_extrinsic::<EthInstantiate>()
-            {
-                EvmExtrinsic::Instantiate { payload, address_bytes: ext.address_bytes()?.into() }
-            } else if let Ok(Some(payload)) = ext.as_extrinsic::<EthCall>() {
-                EvmExtrinsic::Call(payload)
-            } else {
-                return None;
-            };
+            let payload: EvmExtrinsic =
+                if let Ok(Some(payload)) = ext.as_extrinsic::<EthInstantiate>() {
+                    EvmExtrinsic::Instantiate {
+                        payload,
+                        address_bytes: ext.address_bytes()?.into(),
+                    }
+                } else if let Ok(Some(payload)) = ext.as_extrinsic::<EthCall>() {
+                    EvmExtrinsic::Call(payload)
+                } else {
+                    return None;
+                };
             Some((payload.into_receipt_info()?, ext))
         });
 
         // Map each extrinsic to a receipt
         stream::iter(extrinsics)
             .map(
-                |(ExtrinsicReceiptInfo { from, to, contract_address, gas_price }, ext)| async move {
+                |(
+                    ExtrinsicReceiptInfo {
+                        from,
+                        to,
+                        contract_address,
+                        gas_price,
+                    },
+                    ext,
+                )| async move {
                     let events = ext.events().await?;
                     let tx_fees = events
                         .find_first::<TransactionFeePaid>()?
@@ -334,7 +361,11 @@ async fn chain_id(api: &OnlineClient<SrcChainConfig>) -> Result<u64, ClientError
 async fn max_block_weight(api: &OnlineClient<SrcChainConfig>) -> Result<Weight, ClientError> {
     let query = subxt_client::constants().system().block_weights();
     let weights = api.constants().at(&query)?;
-    let max_block = weights.per_class.normal.max_extrinsic.unwrap_or_else(|| weights.max_block);
+    let max_block = weights
+        .per_class
+        .normal
+        .max_extrinsic
+        .unwrap_or(weights.max_block);
     Ok(Weight::from_parts(max_block.ref_time, max_block.proof_size))
 }
 
@@ -375,7 +406,11 @@ impl Client {
         join_set.spawn(Self::subscribe_reconnect(inner.clone()));
 
         updates.changed().await.expect("tx is not dropped");
-        Ok(Self { inner, join_set, updates })
+        Ok(Self {
+            inner,
+            join_set,
+            updates,
+        })
     }
 
     /// Subscribe and log reconnection events.
@@ -386,15 +421,23 @@ impl Client {
             log::info!("RPC client connection lost");
             let now = std::time::Instant::now();
             reconnected.await;
-            log::info!("RPC client reconnection took `{}s`", now.elapsed().as_secs());
+            log::info!(
+                "RPC client reconnection took `{}s`",
+                now.elapsed().as_secs()
+            );
         }
     }
 
     /// Subscribe to new blocks and update the cache.
     async fn subscribe_blocks(inner: Arc<ClientInner>, tx: Sender<()>) -> Result<(), ClientError> {
         log::info!("Subscribing to new blocks");
-        let mut block_stream =
-            inner.as_ref().api.blocks().subscribe_finalized().await.inspect_err(|err| {
+        let mut block_stream = inner
+            .as_ref()
+            .api
+            .blocks()
+            .subscribe_finalized()
+            .await
+            .inspect_err(|err| {
                 log::error!("Failed to subscribe to blocks: {err:?}");
             })?;
 
@@ -411,7 +454,7 @@ impl Client {
 
                     log::error!("Failed to fetch block: {err:?}");
                     return Err(err.into());
-                },
+                }
             };
 
             log::debug!("Pushing block: {}", block.number());
@@ -425,10 +468,12 @@ impl Client {
                 log::debug!("Adding {} receipts", receipts.len());
                 let values = receipts
                     .iter()
-                    .map(|(hash, receipt)| (receipt.transaction_index.clone(), *hash))
+                    .map(|(hash, receipt)| (receipt.transaction_index, *hash))
                     .collect::<HashMap<_, _>>();
                 cache.receipts_by_hash.extend(receipts);
-                cache.receipt_hashes_by_block_and_index.insert(block.hash(), values);
+                cache
+                    .receipt_hashes_by_block_and_index
+                    .insert(block.hash(), values);
             }
 
             cache.insert(block);
@@ -475,7 +520,10 @@ impl Client {
     /// Get receipts count per block.
     pub async fn receipts_count_per_block(&self, block_hash: &SubstrateBlockHash) -> Option<usize> {
         let cache = self.inner.cache.read().await;
-        cache.receipt_hashes_by_block_and_index.get(block_hash).map(|v| v.len())
+        cache
+            .receipt_hashes_by_block_and_index
+            .get(block_hash)
+            .map(|v| v.len())
     }
 
     /// Expose the storage API.
@@ -485,12 +533,16 @@ impl Client {
     ) -> Result<Storage<SrcChainConfig, OnlineClient<SrcChainConfig>>, ClientError> {
         match at {
             BlockNumberOrTagOrHash::U256(block_number) => {
-                let n: SubstrateBlockNumber =
-                    (*block_number).try_into().map_err(|_| ClientError::ConversionFailed)?;
+                let n: SubstrateBlockNumber = (*block_number)
+                    .try_into()
+                    .map_err(|_| ClientError::ConversionFailed)?;
 
-                let hash = self.get_block_hash(n).await?.ok_or(ClientError::BlockNotFound)?;
+                let hash = self
+                    .get_block_hash(n)
+                    .await?
+                    .ok_or(ClientError::BlockNotFound)?;
                 Ok(self.inner.api.storage().at(hash))
-            },
+            }
             BlockNumberOrTagOrHash::H256(hash) => Ok(self.inner.api.storage().at(*hash)),
             BlockNumberOrTagOrHash::BlockTag(_) => {
                 if let Some(block) = self.latest_block().await {
@@ -498,7 +550,7 @@ impl Client {
                 }
                 let storage = self.inner.api.storage().at_latest().await?;
                 Ok(storage)
-            },
+            }
         }
     }
 
@@ -512,12 +564,16 @@ impl Client {
     > {
         match at {
             BlockNumberOrTagOrHash::U256(block_number) => {
-                let n: SubstrateBlockNumber =
-                    (*block_number).try_into().map_err(|_| ClientError::ConversionFailed)?;
+                let n: SubstrateBlockNumber = (*block_number)
+                    .try_into()
+                    .map_err(|_| ClientError::ConversionFailed)?;
 
-                let hash = self.get_block_hash(n).await?.ok_or(ClientError::BlockNotFound)?;
+                let hash = self
+                    .get_block_hash(n)
+                    .await?
+                    .ok_or(ClientError::BlockNotFound)?;
                 Ok(self.inner.api.runtime_api().at(hash))
-            },
+            }
             BlockNumberOrTagOrHash::H256(hash) => Ok(self.inner.api.runtime_api().at(*hash)),
             BlockNumberOrTagOrHash::BlockTag(_) => {
                 if let Some(block) = self.latest_block().await {
@@ -526,7 +582,7 @@ impl Client {
 
                 let api = self.inner.api.runtime_api().at_latest().await?;
                 Ok(api)
-            },
+            }
         }
     }
 
@@ -578,8 +634,14 @@ impl Client {
         let account_id = self.account_id(&contract_address);
         let mut bytes = vec![0u8; 32];
         key.to_big_endian(&mut bytes);
-        let payload = subxt_client::apis().contracts_api().get_storage(account_id, bytes);
-        let result = runtime_api.call(payload).await?.unwrap_or_default().unwrap_or_default();
+        let payload = subxt_client::apis()
+            .contracts_api()
+            .get_storage(account_id, bytes);
+        let result = runtime_api
+            .call(payload)
+            .await?
+            .unwrap_or_default()
+            .unwrap_or_default();
         Ok(result)
     }
 
@@ -590,8 +652,13 @@ impl Client {
     ) -> Result<Vec<u8>, ClientError> {
         let storage_api = self.storage_api(&block).await?;
         let account_id = self.account_id(contract_address);
-        let query = subxt_client::storage().contracts().pristine_code(&account_id.0.into());
-        let result = storage_api.fetch(&query).await?.map(|v| v.0).unwrap_or_default();
+        let code_hash: H256 = account_id.0.into();
+        let query = subxt_client::storage().contracts().pristine_code(code_hash);
+        let result = storage_api
+            .fetch(&query)
+            .await?
+            .map(|v| v.0)
+            .unwrap_or_default();
         Ok(result)
     }
 
@@ -662,7 +729,11 @@ impl Client {
             return Ok(Some(block.hash()));
         }
 
-        let hash = self.inner.rpc.chain_get_block_hash(Some(block_number.into())).await?;
+        let hash = self
+            .inner
+            .rpc
+            .chain_get_block_hash(Some(block_number.into()))
+            .await?;
         Ok(hash)
     }
 
@@ -675,11 +746,11 @@ impl Client {
             BlockNumberOrTag::U256(n) => {
                 let n = (*n).try_into().map_err(|_| ClientError::ConversionFailed)?;
                 self.block_by_number(n).await
-            },
+            }
             BlockNumberOrTag::BlockTag(_) => {
                 let cache = self.inner.cache.read().await;
                 Ok(cache.buffer.back().cloned())
-            },
+            }
         }
     }
 
@@ -748,12 +819,12 @@ impl Client {
         weight: Weight,
     ) -> Result<Balance, ClientError> {
         use crate::subxt_client::runtime_apis::transaction_payment_api::types::query_weight_to_fee;
-        let payload = subxt_client::apis().transaction_payment_api().query_weight_to_fee(
-            query_weight_to_fee::Weight {
+        let payload = subxt_client::apis()
+            .transaction_payment_api()
+            .query_weight_to_fee(query_weight_to_fee::Weight {
                 ref_time: weight.ref_time(),
                 proof_size: weight.proof_size(),
-            },
-        );
+            });
 
         let fee = runtime_api.call(payload).await?;
         Ok(fee)

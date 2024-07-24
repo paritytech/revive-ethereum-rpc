@@ -63,7 +63,11 @@ where
     T: Into<String>,
 {
     fn from(name: T) -> Self {
-        Self { name: name.into(), required: Required::Yes, array: false }
+        Self {
+            name: name.into(),
+            required: Required::Yes,
+            array: false,
+        }
     }
 }
 /// Represents a field in a struct.
@@ -105,7 +109,11 @@ impl Fields {
     /// The methods also takes a [`TypeNameProvider`] to resolve the types of the fields, and to
     /// collect child types.
     pub fn from(value: &ObjectLiteral, provider: &mut impl TypeNameProvider) -> Self {
-        let ObjectLiteral { properties, legacy_aliases, required } = value;
+        let ObjectLiteral {
+            properties,
+            legacy_aliases,
+            required,
+        } = value;
 
         properties
             .iter()
@@ -180,7 +188,10 @@ pub fn doc_str_from_schema(schema: &Schema) -> Option<String> {
     let mut doc = schema.title.clone();
 
     if let Some(description) = &schema.description {
-        doc = Some(doc.map_or_else(|| description.clone(), |doc| format!("{doc}\n{description}")));
+        doc = Some(doc.map_or_else(
+            || description.clone(),
+            |doc| format!("{doc}\n{description}"),
+        ));
     }
 
     doc
@@ -238,7 +249,7 @@ pub struct TypePrinter {
 #[macro_export]
 macro_rules! writeln {
     (@doc $s: ident, $doc: ident) => {
-      crate::writeln!(@doc $s, $doc, 0)
+      $crate::writeln!(@doc $s, $doc, 0)
     };
     (@doc $s: ident, $doc: ident, $indent: literal) => {
         if let Some(doc) = $doc {
@@ -259,17 +270,19 @@ macro_rules! writeln {
 impl TypePrinter {
     /// Prints the type to a buffer.
     pub fn print(self, buffer: &mut String) {
-        let Self { doc, name, content, .. } = self;
+        let Self {
+            doc, name, content, ..
+        } = self;
 
         writeln!(@doc buffer, doc);
         match content {
             TypeContent::Enum(variants) if variants.0.len() == 1 => {
                 let type_info = &variants.0[0].type_info;
                 writeln!(buffer, "pub type {name} = {};", type_info.get_type());
-            },
+            }
             TypeContent::TypeAlias(type_info) => {
                 writeln!(buffer, "pub type {name} = {};", type_info.get_type());
-            },
+            }
             TypeContent::Enum(variants) => {
                 writeln!(
                     buffer,
@@ -280,7 +293,12 @@ impl TypePrinter {
                 for variant in variants.0.iter() {
                     let doc = &variant.doc;
                     writeln!(@doc buffer, doc, 2);
-                    writeln!(buffer, "  {}({}),", variant.name(), variant.type_info.get_type());
+                    writeln!(
+                        buffer,
+                        "  {}({}),",
+                        variant.name(),
+                        variant.type_info.get_type()
+                    );
                 }
                 writeln!(buffer, "}}");
 
@@ -291,7 +309,7 @@ impl TypePrinter {
                 writeln!(buffer, "    {name}::{variant}(Default::default())");
                 writeln!(buffer, "  }}");
                 writeln!(buffer, "}}");
-            },
+            }
             TypeContent::UntaggedEnum(variants) => {
                 writeln!(
                     buffer,
@@ -307,7 +325,7 @@ impl TypePrinter {
                     writeln!(buffer, "  {pascal_name},");
                 }
                 writeln!(buffer, "}}");
-            },
+            }
             TypeContent::Struct(fields) => {
                 writeln!(
                     buffer,
@@ -315,7 +333,14 @@ impl TypePrinter {
                 );
 
                 writeln!(buffer, "pub struct {name} {{");
-                for Field { doc, name, type_info, alias, flatten } in fields {
+                for Field {
+                    doc,
+                    name,
+                    type_info,
+                    alias,
+                    flatten,
+                } in fields
+                {
                     writeln!(@doc buffer, doc, 2);
                     let mut snake_name = name.to_snake_case();
                     let mut serde_params = vec![];
@@ -346,7 +371,7 @@ impl TypePrinter {
                     writeln!(buffer, "  pub {snake_name}: {type_name},");
                 }
                 writeln!(buffer, "}}");
-            },
+            }
         }
     }
 }
@@ -436,8 +461,14 @@ mod test {
             name: "SimpleEnum".to_string(),
             content: TypeContent::Enum(
                 vec![
-                    Variant { doc: Some("The Foo variant".to_string()), type_info: "Foo".into() },
-                    Variant { doc: Some("The Bar variant".to_string()), type_info: "Bar".into() },
+                    Variant {
+                        doc: Some("The Foo variant".to_string()),
+                        type_info: "Foo".into(),
+                    },
+                    Variant {
+                        doc: Some("The Bar variant".to_string()),
+                        type_info: "Bar".into(),
+                    },
                 ]
                 .into(),
             ),

@@ -39,6 +39,9 @@ This command starts the rpc proxy, by default it runs on `localhost:9090`
 make rpc
 ```
 
+Once both the node and the rpc server are started, you can send transaction to the node through the Ethereum JSON-RPC API.
+You can use your browser and a wallet such as [MetaMask](https://metamask.io) as explained in the following section, or run the examples scripts under `./rpc/examples` (see the [Makefile](./Makefile) for more info on how to run them).
+
 ## Run the demo
 
 ```bash

@@ -12,8 +12,8 @@ name = "eth-rpc-proxy"
 path = "src/main.rs"
 
 [[example]]
-name = "deploy-contract"
-path = "examples/deploy-contract.rs"
+name = "deploy"
+path = "examples/deploy.rs"
 required-features = ["example"]
 
 [[example]]

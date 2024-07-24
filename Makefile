@@ -17,8 +17,13 @@ metadata:
 	touch eth-rpc-server/src/subxt_client.rs
 
 SALT ?= 0
-deploy_dummy: 
-	RUST_LOG=info RUST_BACKTRACE=1 cargo run --manifest-path eth-rpc-server/Cargo.toml --example deploy-dummy-contract $(SALT)
+.PHONY: example_deploy
+example_deploy: 
+	RUST_LOG=info cargo run --manifest-path rpc/Cargo.toml --features example --example deploy $(SALT)
+
+.PHONY: example_transfer
+example_transfer: 
+	RUST_LOG=info cargo run --manifest-path rpc/Cargo.toml --features example --example transfer
 
 codegen: 
 	cargo run -p eth-rpc-api_codegen

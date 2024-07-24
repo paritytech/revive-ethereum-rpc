@@ -1,0 +1,48 @@
+[package]
+name = "eth-rpc"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+repository.workspace = true
+version = "0.1.0"
+
+# add a bin section to run the main function
+[[bin]]
+name = "eth-rpc-proxy"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+anyhow.workspace = true
+ethereum-types = { workspace = true, features = ["serialize"] }
+futures.workspace = true
+hex.workspace = true
+jsonrpsee.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+subxt.workspace = true
+subxt-signer.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["full"] }
+parity-scale-codec = { workspace = true, features = ["derive"], default-features = false }
+primitives = { package = "pallet-contracts-evm-primitives", path = "../chain/primitives" }
+eth-rpc-api = { path = "./api", features = ["std"] }
+log.workspace = true
+env_logger.workspace = true
+tracing-subscriber.workspace = true
+tracing.workspace = true
+derive_more.workspace = true
+frame = {workspace = true, default-features = false  }
+secp256k1 = { workspace = true, features = ["recovery"] }
+tower.workspace = true
+tower-http = { workspace = true, features = ["full"] }
+hyper.workspace = true
+
+[features]
+dev = []
+
+
+[dev-dependencies]
+# frame = {package = "polkadot-sdk-frame", version = "0.3.0", default-features = false, features = ["experimental", "runtime"] }
+hex-literal.workspace = true
+indoc.workspace = true

@@ -1,0 +1,63 @@
+[package]
+name = "runtime"
+description = "A solochain runtime template built with Substrate, part of Polkadot Sdk. (polkadot v1.12.0)"
+version = "0.1.0"
+license = "MIT-0"
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+publish = false
+
+
+[dependencies]
+parity-scale-codec = { workspace = true, default-features = false }
+scale-info = { workspace = true, default-features = false }
+
+# this is a frame-based runtime, thus importing `frame` with runtime feature enabled.
+frame = {workspace = true,  default-features = false, features = ["experimental", "runtime"] }
+
+# pallets that we want to use
+pallet-balances = { workspace = true, default-features = false }
+pallet-sudo = { workspace = true, default-features = false }
+pallet-timestamp = { workspace = true, default-features = false }
+pallet-transaction-payment = { workspace = true, default-features = false }
+pallet-transaction-payment-rpc-runtime-api = { workspace = true, default-features = false }
+pallet-contracts = { workspace = true, default-features = false }
+
+pallet-contracts-evm = { path = "../pallet-contracts-evm", default-features = false}
+pallet-contracts-evm-primitives = { path = "../primitives", default-features = false}
+eth-rpc-api = { path = "../../rpc/api", default-features = false } # Move to shared primitives stuff?
+
+# genesis builder that allows us to interact with runtime genesis config
+sp-genesis-builder = { workspace = true, default-features = false }
+sp-runtime = { workspace = true, default-features = false, features = ["serde"] }
+
+# tmp
+hex-literal.workspace = true
+
+[build-dependencies]
+substrate-wasm-builder = { workspace = true, optional = true }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"scale-info/std",
+
+	"frame/std",
+
+	"pallet-balances/std",
+	"pallet-sudo/std",
+	"pallet-timestamp/std",
+	"pallet-transaction-payment-rpc-runtime-api/std",
+	"pallet-transaction-payment/std",
+	"pallet-contracts/std",
+	"pallet-contracts-evm/std",
+	"pallet-contracts-evm-primitives/std",
+	"eth-rpc-api/std",
+
+	"sp-genesis-builder/std",
+	"sp-runtime/std",
+	"substrate-wasm-builder",
+]

@@ -1,4 +1,4 @@
-//! Ethereum Typed Transaction tyes
+//! Ethereum Typed Transaction types
 use frame::deps::codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -14,6 +14,7 @@ macro_rules! transaction_type {
         pub struct $name;
 
         impl $name {
+            /// Convert to Byte
             pub fn as_byte(&self) -> Byte {
                 Byte::from($value)
             }
@@ -31,7 +32,10 @@ macro_rules! transaction_type {
                 if $value == input.read_byte()? {
                     Ok(Self {})
                 } else {
-                    Err(parity_scale_codec::Error::from(concat!("expected ", $value)))
+                    Err(parity_scale_codec::Error::from(concat!(
+                        "expected ",
+                        $value
+                    )))
                 }
             }
         }

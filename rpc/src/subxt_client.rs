@@ -2,9 +2,11 @@
 use primitives::MultiSignature;
 use subxt::config::{Config, PolkadotConfig, PolkadotExtrinsicParams};
 
+#[allow(missing_docs)]
 #[subxt::subxt(runtime_metadata_path = "metadata.scale")]
 mod src_chain {}
 
+/// The configuration for the source chain.
 pub enum SrcChainConfig {}
 impl Config for SrcChainConfig {
     type Hash = <PolkadotConfig as Config>::Hash;

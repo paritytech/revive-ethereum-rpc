@@ -1,3 +1,4 @@
+//! Various adapters for the RPC types.
 use crate::{
     Bytes, GenericTransaction, ReceiptInfo, TransactionInfo, TransactionLegacySigned,
     TransactionLegacyUnsigned, U256,
@@ -78,16 +79,22 @@ impl TransactionLegacyUnsigned {
 /// It can be encoded as a [`Vec<u8>`] and passed as the **input** field of a transaction.
 #[derive(Clone, Encode, Decode, Debug)]
 pub struct CallInput {
+    /// The code's bytes.
     pub code: Vec<u8>,
+    /// the input data.
     pub data: Vec<u8>,
+    /// The salt
     pub salt: Vec<u8>,
 }
 
 /// The output information of a dry run.
 #[derive(Clone, Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub struct DryRunInfo<Balance> {
+    /// The weight consumed by the transaction.
     pub gas_limit: Weight,
+    /// The deposit consumed by the transaction.
     pub storage_deposit_limit: Option<Balance>,
+    /// The output data of the transaction.
     pub return_data: Vec<u8>,
 }
 

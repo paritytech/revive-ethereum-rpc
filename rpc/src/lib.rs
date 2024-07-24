@@ -1,3 +1,6 @@
+//! The [`EthRpcServer`] RPC server implementation
+#![warn(missing_docs)]
+
 use adapters::CallInput;
 use client::{ClientError, GAS_PRICE};
 use jsonrpsee::{
@@ -41,14 +44,19 @@ impl EthRpcServerImpl {
 /// The error type for the EVM RPC server.
 #[derive(Error, Debug)]
 pub enum EthRpcError {
+    /// A [`ClientError`] wrapper error.
     #[error("Client error: {0}")]
     ClientError(#[from] ClientError),
+    /// A [`rlp::DecoderError`] wrapper error.
     #[error("Decoding error: {0}")]
     RlpError(#[from] rlp::DecoderError),
+    /// A Decimals conversion error.
     #[error("Conversion error")]
     ConversionError,
+    /// An invalid signature error.
     #[error("Invalid signature")]
     InvalidSignature,
+    /// The account was not found at the given address
     #[error("Account not found for address {0:?}")]
     AccountNotFound(H160),
 }

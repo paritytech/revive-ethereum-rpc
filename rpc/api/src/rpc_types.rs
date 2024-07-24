@@ -1,4 +1,5 @@
 //! Generated JSON-RPC types.
+#![allow(missing_docs)]
 
 use crate::{byte::*, Type0, Type1, Type2};
 use derive_more::{From, TryInto};
@@ -50,7 +51,10 @@ pub struct Block {
     /// Number
     pub number: U256,
     /// Parent Beacon Block Root
-    #[serde(rename = "parentBeaconBlockRoot", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "parentBeaconBlockRoot",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub parent_beacon_block_root: Option<H256>,
     /// Parent block hash
     #[serde(rename = "parentHash")]
@@ -132,7 +136,10 @@ pub struct GenericTransaction {
     pub access_list: Option<AccessList>,
     /// blobVersionedHashes
     /// List of versioned blob hashes associated with the transaction's EIP-4844 data blobs.
-    #[serde(rename = "blobVersionedHashes", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "blobVersionedHashes",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub blob_versioned_hashes: Option<Vec<H256>>,
     /// blobs
     /// Raw blob data.
@@ -166,7 +173,10 @@ pub struct GenericTransaction {
     pub max_fee_per_gas: Option<U256>,
     /// max priority fee per gas
     /// Maximum fee per gas the sender is willing to pay to miners in wei
-    #[serde(rename = "maxPriorityFeePerGas", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "maxPriorityFeePerGas",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub max_priority_fee_per_gas: Option<U256>,
     /// nonce
     #[serde(skip_serializing_if = "Option::is_none")]

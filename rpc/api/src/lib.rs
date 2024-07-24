@@ -1,4 +1,5 @@
 //! Generated JSON-RPC methods and types, for Ethereum.
+#![warn(missing_docs)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(not(feature = "std"))]

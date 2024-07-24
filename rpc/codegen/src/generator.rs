@@ -184,6 +184,7 @@ impl TypeGenerator {
 
         let mut code = indoc! {r###"
             //! Generated JSON-RPC methods.
+            #![allow(missing_docs)]
             #![cfg(feature = "std")]
 
             use crate::*;
@@ -219,6 +220,7 @@ impl TypeGenerator {
     pub fn generate_types(&mut self, specs: &OpenRpc) -> String {
         let mut code = indoc! {r###"
             //! Generated JSON-RPC types.
+            #![allow(missing_docs)]
 
             use crate::byte::*;
             use derive_more::{From, TryInto};

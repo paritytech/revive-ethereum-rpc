@@ -127,7 +127,10 @@ impl Decodable for TransactionLegacySigned {
 
 /// Recover the signer of a transaction.
 pub trait SignerRecovery {
+    /// The signature type.
     type Signature;
+
+    /// The signer address type.
     type Signer;
 
     /// Recover the signer of a transaction from its signature.

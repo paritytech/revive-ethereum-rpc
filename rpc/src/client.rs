@@ -149,22 +149,31 @@ impl EvmExtrinsic {
 /// The error type for the client.
 #[derive(Error, Debug)]
 pub enum ClientError {
+    /// A [`subxt::Error`] wrapper error.
     #[error("Subxt error: {0}")]
     SubxtError(#[from] subxt::Error),
+    /// A [`RpcError`] wrapper error.
     #[error("RPC error: {0}")]
     RpcError(#[from] RpcError),
+    /// A [`parity_scale_codec::Error`] wrapper error.
     #[error("Codec error: {0}")]
     CodecError(#[from] parity_scale_codec::Error),
-    #[error("Dispatch error")]
-    DispatchError,
+    /// The dry run failed.
+    #[error("Dry run failed")]
+    DryRunFailed,
+    /// A decimal conversion failed.
     #[error("Conversion failed")]
     ConversionFailed,
+    /// The block hash was not found.
     #[error("Hash not found")]
     BlockNotFound,
+    /// The transaction fee could not be found
     #[error("TransactionFeePaid event not found")]
     TxFeeNotFound,
+    /// The token decimals property was not found
     #[error("tokenDecimals not found in properties")]
     TokenDecimalsNotFound,
+    /// The cache is empty.
     #[error("Cache is empty")]
     CacheEmpty,
 }
@@ -216,6 +225,7 @@ impl<const N: usize> BlockCache<N> {
 pub struct Client {
     inner: Arc<ClientInner>,
     join_set: JoinSet<Result<(), ClientError>>,
+    /// A watch channel to signal cache updates.
     pub updates: tokio::sync::watch::Receiver<()>,
 }
 
@@ -617,12 +627,13 @@ impl Client {
         let payload = subxt_client::apis().contracts_evm_api().gas_estimate(tx);
         let result = runtime_api.call(payload).await?.map_err(|err| {
             log::debug!("Failed to dry_run: {err:?}");
-            ClientError::DispatchError
+            ClientError::DryRunFailed
         })?;
 
         Ok(result)
     }
 
+    /// Get the contract storage for the given contract address and key.
     pub async fn get_contract_storage(
         &self,
         contract_address: H160,
@@ -645,6 +656,7 @@ impl Client {
         Ok(result)
     }
 
+    /// Get the contract code for the given contract address.
     pub async fn get_contract_code(
         &self,
         contract_address: &H160,

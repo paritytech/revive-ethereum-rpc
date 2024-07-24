@@ -69,11 +69,10 @@ When you interact with Metamask and restart the chain, you need to go to Setting
   - Network name: Revive demo
   - RPC URL: <http://localhost:9090>
   - Chain ID: 596
-  - Currency Symbol
+  - Currency Symbol: `DEV`
 
 #### Import Dev account
 
 You will need to import the following account that is endowed with some balance at genesis to interact with the chain:
-Account: 0x75E480dB528101a381Ce68544611C169Ad7EB342
-Private Key: a872f6cbd25a0e04a08b1e21098017a9e6194d101d75e13111f71410c59cd57f
-The chain has the following account endowed with some balance that you can connect to
+Account: `0x75E480dB528101a381Ce68544611C169Ad7EB342`
+Private Key: `a872f6cbd25a0e04a08b1e21098017a9e6194d101d75e13111f71410c59cd57f`

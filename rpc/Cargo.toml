@@ -11,6 +11,21 @@ version = "0.1.0"
 name = "eth-rpc-proxy"
 path = "src/main.rs"
 
+[[example]]
+name = "deploy-contract"
+path = "examples/deploy-contract.rs"
+required-features = ["example"]
+
+[[example]]
+name = "transfer"
+path = "examples/transfer.rs"
+required-features = ["example"]
+
+[[example]]
+name = "rpc-playground"
+path = "examples/rpc-playground.rs"
+required-features = ["example"]
+
 [dependencies]
 clap.workspace = true
 anyhow.workspace = true
@@ -40,7 +55,7 @@ hyper.workspace = true
 
 [features]
 dev = []
-
+example = []
 
 [dev-dependencies]
 # frame = {package = "polkadot-sdk-frame", version = "0.3.0", default-features = false, features = ["experimental", "runtime"] }

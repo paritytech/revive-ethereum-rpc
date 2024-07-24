@@ -11,6 +11,7 @@ use subxt::{config::DefaultExtrinsicParamsBuilder, tx::Signer, utils::MultiAddre
 use subxt_client::{runtime_types::sp_weights::weight_v2::Weight, SrcChainConfig};
 use thiserror::Error;
 pub mod client;
+pub mod example;
 pub mod subxt_client;
 mod tests;
 
@@ -88,7 +89,10 @@ impl EthRpcServer for EthRpcServerImpl {
         transaction: GenericTransaction,
         _block: Option<BlockNumberOrTag>,
     ) -> RpcResult<U256> {
-        let result = self.client.gas_estimate(&transaction, BlockTag::Latest.into()).await?;
+        let result = self
+            .client
+            .gas_estimate(&transaction, BlockTag::Latest.into())
+            .await?;
         log::debug!("estimate_gas: for {transaction:#?} result = {result:?}");
         Ok(result)
     }
@@ -143,7 +147,10 @@ impl EthRpcServer for EthRpcServerImpl {
         let storage_deposit_limit = limits.storage_deposit_limit.map(|limit| limit.into());
         let account_id = self.client.account_id(&eth_addr);
         let params = DefaultExtrinsicParamsBuilder::default().build();
-        let signer = EthSigner { account_id, signature };
+        let signer = EthSigner {
+            account_id,
+            signature,
+        };
 
         let hash = if let Some(to) = to {
             let call = subxt_client::tx().contracts_evm().eth_call(
@@ -201,10 +208,14 @@ impl EthRpcServer for EthRpcServerImpl {
                 storage_deposit_limit,
             );
 
-            self.client.tx().sign_and_submit(&call, &signer, params).await.map_err(|err| {
-                log::debug!("Failed to submit instantiate call: {err:?}");
-                EthRpcError::ClientError(err.into())
-            })?
+            self.client
+                .tx()
+                .sign_and_submit(&call, &signer, params)
+                .await
+                .map_err(|err| {
+                    log::debug!("Failed to submit instantiate call: {err:?}");
+                    EthRpcError::ClientError(err.into())
+                })?
         };
 
         log::debug!("send_raw_transaction succeed with hash: {hash}");
@@ -257,7 +268,10 @@ impl EthRpcServer for EthRpcServerImpl {
     ) -> RpcResult<Bytes> {
         let info = self
             .client
-            .dry_run(&transaction, block.unwrap_or_else(|| BlockTag::Latest.into()))
+            .dry_run(
+                &transaction,
+                block.unwrap_or_else(|| BlockTag::Latest.into()),
+            )
             .await?;
         Ok(info.return_data.into())
     }
@@ -281,9 +295,17 @@ impl EthRpcServer for EthRpcServerImpl {
         let block_hash = if let Some(block_hash) = block_hash {
             block_hash
         } else {
-            self.client.latest_block().await.ok_or(ClientError::BlockNotFound)?.hash()
+            self.client
+                .latest_block()
+                .await
+                .ok_or(ClientError::BlockNotFound)?
+                .hash()
         };
-        Ok(self.client.receipts_count_per_block(&block_hash).await.map(U256::from))
+        Ok(self
+            .client
+            .receipts_count_per_block(&block_hash)
+            .await
+            .map(U256::from))
     }
 
     async fn get_block_transaction_count_by_number(
@@ -297,7 +319,11 @@ impl EthRpcServer for EthRpcServerImpl {
             return Ok(None);
         };
 
-        Ok(self.client.receipts_count_per_block(&block.hash).await.map(U256::from))
+        Ok(self
+            .client
+            .receipts_count_per_block(&block.hash)
+            .await
+            .map(U256::from))
     }
 
     async fn get_storage_at(
@@ -306,7 +332,10 @@ impl EthRpcServer for EthRpcServerImpl {
         storage_slot: U256,
         block: BlockNumberOrTagOrHash,
     ) -> RpcResult<Bytes> {
-        let bytes = self.client.get_contract_storage(address, storage_slot, block).await?;
+        let bytes = self
+            .client
+            .get_contract_storage(address, storage_slot, block)
+            .await?;
         Ok(bytes.into())
     }
 
@@ -315,7 +344,10 @@ impl EthRpcServer for EthRpcServerImpl {
         block_hash: H256,
         transaction_index: U256,
     ) -> RpcResult<Option<TransactionInfo>> {
-        let receipt = self.client.receipt_by_hash_and_index(&block_hash, &transaction_index).await;
+        let receipt = self
+            .client
+            .receipt_by_hash_and_index(&block_hash, &transaction_index)
+            .await;
         Ok(receipt.map(Into::into))
     }
 

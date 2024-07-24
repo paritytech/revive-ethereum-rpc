@@ -7,17 +7,6 @@ This serves the following purposes:
 - Users can interact with RISC-V contracts using an Ethereum compatible wallet.
 - Developers can use existing Ethereum tooling to interact with pallet-revive.and deploy contracts wherever the new RISC-V runtime pallet is deployed (e.g AssetHub).
 
-# Justification and Background
-
-- [Refereunda 885](https://polkadot.polkassembly.io/referenda/885) - Should we allow EVM compatible contracts on Asset Hub?
-- [Forum post](https://forum.polkadot.network/t/hybrid-system-chains-make-polkadot-permissionless/7089) - Hybrid system chains make Polkadot perimisionless
-- [Forum post](https://forum.polkadot.network/t/contracts-update-solidity-on-polkavm/6949) - Contracts update: Solidity on PolkaVM
-
-# Technical references
-
-- [Acala](https://github.com/AcalaNetwork/Acala) and [bodhi.js](https://github.com/AcalaNetwork/bodhi.js), Acala's Ethereum RPC server.
-- [Ethink](https://github.com/agryaznov/ethink), an Ethereum & Polkadot RPC compatibility POC.
-
 # Project Structure
 
 - `./rpc`
@@ -76,3 +65,14 @@ When you interact with Metamask and restart the chain, you need to go to Setting
 You will need to import the following account that is endowed with some balance at genesis to interact with the chain:
 Account: `0x75E480dB528101a381Ce68544611C169Ad7EB342`
 Private Key: `a872f6cbd25a0e04a08b1e21098017a9e6194d101d75e13111f71410c59cd57f`
+
+# Justification and Background
+
+- [Refereunda 885](https://polkadot.polkassembly.io/referenda/885) - Should we allow EVM compatible contracts on Asset Hub?
+- [Forum post](https://forum.polkadot.network/t/hybrid-system-chains-make-polkadot-permissionless/7089) - Hybrid system chains make Polkadot perimisionless
+- [Forum post](https://forum.polkadot.network/t/contracts-update-solidity-on-polkavm/6949) - Contracts update: Solidity on PolkaVM
+
+# Technical references
+
+- [Acala](https://github.com/AcalaNetwork/Acala) and [bodhi.js](https://github.com/AcalaNetwork/bodhi.js), Acala's Ethereum RPC server.
+- [Ethink](https://github.com/agryaznov/ethink), an Ethereum & Polkadot RPC compatibility POC.

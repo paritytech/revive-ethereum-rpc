@@ -16,22 +16,31 @@ async fn main() -> anyhow::Result<()> {
     let account = Account::default();
     println!("Account address: {:?}", account.address());
 
-    let url = "http://localhost:9090".to_string();
-    let client = HttpClientBuilder::default().build(url)?;
+    let client = HttpClientBuilder::default().build("http://localhost:9090".to_string())?;
 
-    let salt: Vec<u8> = vec![std::env::args().nth(1).unwrap_or("1".to_string()).parse().unwrap()];
+    let salt: Vec<u8> = vec![std::env::args()
+        .nth(1)
+        .unwrap_or("1".to_string())
+        .parse()
+        .unwrap()];
     println!("Using salt: {salt:?}");
 
     let data = vec![];
-    let input =
-        adapters::CallInput { code: DUMMY_BYTES.to_vec(), data: data.clone(), salt: salt.clone() };
-    let input = input.encode();
+    let input = adapters::CallInput {
+        code: DUMMY_BYTES.to_vec(),
+        data: data.clone(),
+        salt: salt.clone(),
+    };
 
-    let hash = account.send_transaction(&client, input.into(), None).await?;
+    let input = input.encode();
+    let hash = account
+        .send_transaction(&client, input.into(), None)
+        .await?;
+    println!("Deploy Tx hash: {hash:?}");
 
     tokio::time::sleep(std::time::Duration::from_secs(2)).await;
     let receipt = client.get_transaction_receipt(hash).await;
-    println!("Receipt: {receipt:?}");
+    println!("Deploy Tx receipt: {receipt:?}");
 
     let contract_address = primitives::evm_contract_address(
         &primitives::get_account_id(&account.address()),
@@ -39,13 +48,11 @@ async fn main() -> anyhow::Result<()> {
         &data,
         &salt,
     );
-
     println!("Contract address: {:?}", contract_address);
 
     let hash = account
         .send_transaction(&client, Bytes::default(), Some(contract_address))
         .await?;
-
     println!("Contract call tx hash: {hash:?}");
     Ok(())
 }
@@ -125,14 +132,10 @@ impl Account {
         let tx = self.sign_transaction(unsigned_tx.clone());
         let bytes = tx.rlp_bytes().to_vec();
 
-        println!("Sending from eth_addr: {:?} with nonce: {nonce}", self.address());
-
         let hash = client
             .send_raw_transaction(bytes.clone().into())
             .await
             .with_context(|| "transaction failed")?;
-
-        println!("Transaction hash: {hash:?}");
 
         Ok(hash)
     }

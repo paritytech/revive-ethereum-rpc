@@ -18,7 +18,7 @@ metadata:
 
 SALT ?= 0
 deploy_dummy: 
-	RUST_LOG=info RUST_BACKTRACE=1 cargo run --manifest-path eth-rpc-server/Cargo.toml --example 3-deploy-dummy $(SALT)
+	RUST_LOG=info RUST_BACKTRACE=1 cargo run --manifest-path eth-rpc-server/Cargo.toml --example deploy-dummy-contract $(SALT)
 
 codegen: 
 	cargo run -p eth-rpc-api_codegen

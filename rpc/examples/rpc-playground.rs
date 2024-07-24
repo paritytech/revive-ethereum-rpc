@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use anyhow::Context;
 use eth_rpc_api::{rpc_methods::*, BlockTag, H160};
 use frame::deps::sp_core::keccak_256;
 use jsonrpsee::http_client::HttpClientBuilder;
@@ -13,9 +14,20 @@ async fn main() -> anyhow::Result<()> {
     let url = "http://localhost:9090".to_string();
     let client = HttpClientBuilder::default().build(url)?;
 
-    let nonce = client.get_transaction_count(account.address(), BlockTag::Latest.into()).await?;
+    let block = client
+        .get_block_by_number(BlockTag::Latest.into(), false)
+        .await?;
+    println!("Latest block: {block:#?}");
 
-    println!("Get nonce {nonce}");
+    let nonce = client
+        .get_transaction_count(account.address(), BlockTag::Latest.into())
+        .await?;
+    println!("Account nonce: {nonce:?}");
+
+    let balance = client
+        .get_balance(account.address(), BlockTag::Latest.into())
+        .await?;
+    println!("Account balance: {balance:?}");
 
     Ok(())
 }

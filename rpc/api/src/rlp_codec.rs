@@ -1,35 +1,12 @@
 //! RLP encoding and decoding for Ethereum transactions.
+//! See https://eth.wiki/fundamentals/rlp for more information about RLP encoding.
 
+use super::*;
 use ethereum_types::H160;
 use frame::deps::{sp_core::keccak_256, sp_io::crypto::secp256k1_ecdsa_recover};
 use rlp::{Decodable, Encodable};
 
-use super::*;
-
-impl Decodable for TransactionSigned {
-    fn decode(rlp: &rlp::Rlp) -> Result<Self, rlp::DecoderError> {
-        if rlp.is_null() {
-            return Err(rlp::DecoderError::RlpInvalidLength);
-        }
-        if rlp.is_list() {
-
-            //Ok(TransactionLegacySigned::decode(rlp)?)
-        }
-
-        match rlp.as_raw()[0] {
-            0x01 => {
-                //Ok(TransactionLegacySigned::decode(rlp)?)
-                todo!()
-            },
-            0x02 => {
-                //Ok(TransactionLegacySigned::decode(rlp)?)
-                todo!()
-            },
-            _ => Err(rlp::DecoderError::Custom("Invalid transaction type")),
-        }
-    }
-}
-
+/// See https://eips.ethereum.org/EIPS/eip-155
 impl Encodable for TransactionLegacyUnsigned {
     fn rlp_append(&self, s: &mut rlp::RlpStream) {
         if let Some(chain_id) = self.chain_id {
@@ -61,6 +38,7 @@ impl Encodable for TransactionLegacyUnsigned {
     }
 }
 
+/// See https://eips.ethereum.org/EIPS/eip-155
 impl Decodable for TransactionLegacyUnsigned {
     fn decode(rlp: &rlp::Rlp) -> Result<Self, rlp::DecoderError> {
         Ok(TransactionLegacyUnsigned {
@@ -108,6 +86,7 @@ impl Encodable for TransactionLegacySigned {
     }
 }
 
+/// See https://eips.ethereum.org/EIPS/eip-155
 impl Decodable for TransactionLegacySigned {
     fn decode(rlp: &rlp::Rlp) -> Result<Self, rlp::DecoderError> {
         let v: U256 = rlp.val_at(6)?;
@@ -146,9 +125,12 @@ impl Decodable for TransactionLegacySigned {
     }
 }
 
+/// Recover the signer of a transaction.
 pub trait SignerRecovery {
     type Signature;
     type Signer;
+
+    /// Recover the signer of a transaction from its signature.
     fn recover_signer(&self, signature: &Self::Signature) -> Option<Self::Signer>;
 }
 
@@ -163,100 +145,47 @@ impl SignerRecovery for TransactionLegacyUnsigned {
     }
 }
 
-impl Encodable for AccessListEntry {
-    fn rlp_append(&self, s: &mut rlp::RlpStream) {
-        s.begin_list(2);
-        s.append(&self.address);
-        s.append_list(&self.storage_keys);
-    }
-}
-
-impl Encodable for Transaction2930Unsigned {
-    fn rlp_append(&self, s: &mut rlp::RlpStream) {
-        s.begin_list(8);
-        s.append(&self.chain_id);
-        s.append(&self.nonce);
-        s.append(&self.gas_price);
-        s.append(&self.gas);
-        match self.to {
-            Some(ref to) => s.append(to),
-            None => s.append_empty_data(),
-        };
-        s.append(&self.value);
-        s.append(&self.input.0);
-        s.append_list(&self.access_list);
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
     use core::str::FromStr;
-    use hex_literal::hex;
-    use pretty_assertions::assert_eq;
-    use secp256k1::{Message, Secp256k1, SecretKey};
+    use secp256k1::{Message, PublicKey, Secp256k1, SecretKey};
 
-    // see https://eips.ethereum.org/EIPS/eip-155
-    #[test]
-    fn eip_155_encoding_works() {
-        let chain_id = 1u32;
-        let tx = TransactionLegacyUnsigned {
-            nonce: 9.into(),
-            gas_price: (20 * 10u128.pow(9)).into(),
-            gas: 21000u32.into(),
-            to: Some(H160::from_str("0x3535353535353535353535353535353535353535").unwrap()),
-            value: 10u128.pow(18).into(),
-            chain_id: Some(chain_id.into()),
-            ..Default::default()
-        };
+    struct Account {
+        sk: SecretKey,
+    }
 
-        let bytes = tx.rlp_bytes();
-        assert_eq!(
-            bytes.to_vec(),
-            hex!("ec098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a764000080018080")
-        );
+    impl Default for Account {
+        fn default() -> Self {
+            Account {
+                sk: SecretKey::from_str(
+                    "a872f6cbd25a0e04a08b1e21098017a9e6194d101d75e13111f71410c59cd57f",
+                )
+                .unwrap(),
+            }
+        }
+    }
 
-        let tx_hash = keccak_256(&bytes);
-        assert_eq!(
-            tx_hash,
-            hex!("daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53")
-        );
+    impl Account {
+        fn address(&self) -> H160 {
+            let pub_key =
+                PublicKey::from_secret_key(&Secp256k1::new(), &self.sk).serialize_uncompressed();
+            let hash = keccak_256(&pub_key[1..]);
+            H160::from_slice(&hash[12..])
+        }
 
-        let sk =
-            SecretKey::from_str("4646464646464646464646464646464646464646464646464646464646464646")
-                .unwrap();
-
-        let msg = Message::from_digest(tx_hash);
-        let secp = Secp256k1::new();
-        let sig = secp.sign_ecdsa_recoverable(&msg, &sk);
-        let signed_tx = TransactionLegacySigned::from(tx, sig);
-
-        assert_eq!(signed_tx.v, U256::from(37));
-        assert_eq!(
-            signed_tx.r,
-            U256::from_dec_str(
-                "18515461264373351373200002665853028612451056578545711640558177340181847433846"
-            )
-            .unwrap()
-        );
-        assert_eq!(
-            signed_tx.s,
-            U256::from_dec_str(
-                "46948507304638947509940763649030358759909902576025900602547168820602576006531"
-            )
-            .unwrap()
-        );
-
-        let bytes = signed_tx.rlp_bytes();
-
-        assert_eq!(
-            bytes.to_vec(),
-            hex!("f86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
-        );
+        fn sign_transaction(&self, tx: TransactionLegacyUnsigned) -> TransactionLegacySigned {
+            let rlp_encoded = tx.rlp_bytes();
+            let tx_hash = keccak_256(&rlp_encoded);
+            let secp = Secp256k1::new();
+            let msg = Message::from_digest(tx_hash);
+            let sig = secp.sign_ecdsa_recoverable(&msg, &self.sk);
+            TransactionLegacySigned::from(tx, sig)
+        }
     }
 
     #[test]
-    fn encode_decode_legacy_transaction() {
+    fn encode_decode_legacy_transaction_works() {
         let tx = TransactionLegacyUnsigned {
             chain_id: Some(596.into()),
             gas: U256::from(21000),
@@ -271,5 +200,25 @@ mod test {
         let rlp_bytes = rlp::encode(&tx);
         let decoded = rlp::decode::<TransactionLegacyUnsigned>(&rlp_bytes).unwrap();
         dbg!(&decoded);
+    }
+
+    #[test]
+    fn recover_address_works() {
+        let account = Account::default();
+
+        let unsigned_tx = TransactionLegacyUnsigned {
+            value: 200_000_000_000_000_000_000u128.into(),
+            gas_price: 100_000_000_200u64.into(),
+            gas: 100_107u32.into(),
+            nonce: 3.into(),
+            to: Some(H160::from_str("75e480db528101a381ce68544611c169ad7eb342").unwrap()),
+            chain_id: Some(596.into()),
+            ..Default::default()
+        };
+
+        let tx = account.sign_transaction(unsigned_tx.clone());
+        let recovered_address = tx.recover_eth_address().unwrap();
+
+        assert_eq!(account.address(), recovered_address);
     }
 }

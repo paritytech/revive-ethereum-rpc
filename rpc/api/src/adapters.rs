@@ -4,16 +4,7 @@ use crate::{
     TransactionLegacyUnsigned, U256,
 };
 use ethereum_types::H160;
-use frame::{
-    deps::{sp_core::blake2_256, sp_runtime::AccountId32},
-    prelude::*,
-};
-
-/// Convert an EVM address to a Substrate account ID.
-pub fn get_account_id(evm: &H160) -> AccountId32 {
-    let payload = (b"AccountId32:", evm);
-    AccountId32::new(payload.using_encoded(blake2_256))
-}
+use frame::prelude::*;
 
 impl TransactionLegacyUnsigned {
     /// Convert a legacy transaction to a [`GenericTransaction`].

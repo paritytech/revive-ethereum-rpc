@@ -29,7 +29,6 @@ required-features = ["example"]
 [dependencies]
 clap.workspace = true
 anyhow.workspace = true
-ethereum-types = { workspace = true, features = ["serialize"] }
 futures.workspace = true
 jsonrpsee.workspace = true
 serde_json.workspace = true

@@ -58,3 +58,6 @@ std = [
 	"sp-runtime/std",
 	"substrate-wasm-builder",
 ]
+
+[package.metadata.cargo-machete]
+ignored = ["parity-scale-codec", "scale-info"]

@@ -5,7 +5,6 @@ edition.workspace = true
 
 [dependencies]
 Inflector.workspace = true
-hex = { workspace = true, features = [ "serde"] }
 indoc.workspace = true
 lazy_static.workspace = true
 serde = { workspace = true, features = ["derive"] }

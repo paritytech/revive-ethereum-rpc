@@ -12,7 +12,9 @@ use frame::deps::sp_core::keccak_256;
 use jsonrpsee::http_client::HttpClient;
 use secp256k1::{Message, PublicKey, Secp256k1, SecretKey};
 
+/// A simple account that can sign transactions
 pub struct Account {
+    /// The secret key of the account
     sk: SecretKey,
 }
 
@@ -28,6 +30,7 @@ impl Default for Account {
 }
 
 impl Account {
+    /// Get the [`H160`] address of the account.
     pub fn address(&self) -> H160 {
         let pub_key =
             PublicKey::from_secret_key(&Secp256k1::new(), &self.sk).serialize_uncompressed();
@@ -35,6 +38,7 @@ impl Account {
         H160::from_slice(&hash[12..])
     }
 
+    /// Sign a transaction.
     pub fn sign_transaction(&self, tx: TransactionLegacyUnsigned) -> TransactionLegacySigned {
         let rlp_encoded = tx.rlp_bytes();
         let tx_hash = keccak_256(&rlp_encoded);
@@ -44,6 +48,7 @@ impl Account {
         TransactionLegacySigned::from(tx, sig)
     }
 
+    /// Send a transaction.
     pub async fn send_transaction(
         &self,
         client: &HttpClient,

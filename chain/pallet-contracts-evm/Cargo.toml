@@ -20,7 +20,6 @@ eth-rpc-api = { path = "../../rpc/api", default-features = false  } # TODO move 
 primitives = { package = "pallet-contracts-evm-primitives", path = "../primitives", default-features = false }
 log = { workspace = true }
 pallet-contracts.workspace = true
-pallet-balances.workspace = true
 
 [features]
 default = ["std"]
@@ -31,6 +30,5 @@ std = [
 	"log/std",
 	"eth-rpc-api/std",
 	"pallet-contracts/std",
-	"pallet-balances/std",
 	"primitives/std",
 ]

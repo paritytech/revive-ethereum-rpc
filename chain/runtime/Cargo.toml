@@ -33,9 +33,6 @@ eth-rpc-api = { path = "../../rpc/api", default-features = false } # Move to sha
 sp-genesis-builder = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false, features = ["serde"] }
 
-# tmp
-hex-literal.workspace = true
-
 [build-dependencies]
 substrate-wasm-builder = { workspace = true, optional = true }
 

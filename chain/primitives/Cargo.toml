@@ -17,9 +17,6 @@ parity-scale-codec = { workspace = true, features = ["derive"], default-features
 scale-info = { workspace = true, default-features = false, features = ["derive"] }
 frame = {workspace = true, default-features = false, features = ["experimental", "runtime"] }
 serde = { workspace = true, features = ["alloc", "derive"] }
-ethereum-types = { workspace = true, features = ["serialize", "rlp"], default-features = false }
-rlp = { workspace = true, default-features = false }
-hex = { workspace = true, default-features = false }
 eth-rpc-api = { path = "../../rpc/api", default-features = false }
 
 [dev-dependencies]
@@ -31,9 +28,6 @@ std = [
 	"parity-scale-codec/std",
 	"frame/std",
 	"scale-info/std",
-	"rlp/std",
 	"serde/std",
-	"ethereum-types/std",
 	"eth-rpc-api/std",
-	"hex/std"
 ]

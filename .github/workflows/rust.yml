@@ -81,50 +81,72 @@ jobs:
         run: cargo clippy --all-targets --all-features -- -D warnings
       - if: failure()
         uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-  #
-  # check:
-  #   name: Cargo check
-  #   needs: [fmt, machete]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Call rust-prerequisites
-  #       uses: ./.github/workflows/rust-prerequisites.yml
-  #     - name: Cargo check all targets
-  #       run: cargo check --all-targets
-  #     - if: failure()
-  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-  #
-  # docs:
-  #   name: Check documentation and run doc tests
-  #   needs: [fmt, machete]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Call rust-prerequisites
-  #       uses: ./.github/workflows/rust-prerequisites.yml
-  #     - name: Check internal documentation links
-  #       run: RUSTDOCFLAGS="--deny rustdoc::broken_intra_doc_links" cargo doc -vv --workspace --no-deps --document-private-items
-  #     - name: Run cargo test on documentation
-  #       uses: actions-rs/cargo@v1.0.3
-  #       with:
-  #         command: test
-  #         args: --doc
-  #     - if: failure()
-  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-  #
-  # tests:
-  #   name: Test
-  #   needs: [clippy, check, docs]
-  #   runs-on: ubuntu-latest-16-cores
-  #   timeout-minutes: 30
-  #   steps:
-  #     - name: Call rust-prerequisites
-  #       uses: ./.github/workflows/rust-prerequisites.yml
-  #     - name: Install cargo-nextest
-  #       run: cargo install cargo-nextest
-  #     - name: Run tests
-  #       uses: actions-rs/cargo@v1.0.3
-  #       with:
-  #         command: nextest
-  #         args: run --workspace
-  #     - if: failure()
-  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+
+  check:
+    name: Cargo check
+    needs: [fmt, machete]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install Rust compilation prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup target add wasm32-unknown-unknown --toolchain stable
+          rustup toolchain install nightly --profile minimal --no-self-update
+          rustup component add rustfmt clippy --toolchain nightly
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - name: Cargo check all targets
+        run: cargo check --all-targets
+      - if: failure()
+        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+
+  docs:
+    name: Check documentation and run doc tests
+    needs: [fmt, machete]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install Rust compilation prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup target add wasm32-unknown-unknown --toolchain stable
+          rustup toolchain install nightly --profile minimal --no-self-update
+          rustup component add rustfmt clippy --toolchain nightly
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - name: Check internal documentation links
+        run: RUSTDOCFLAGS="--deny rustdoc::broken_intra_doc_links" cargo doc -vv --workspace --no-deps --document-private-items
+      - name: Run cargo test on documentation
+        run: cargo test --doc
+      - if: failure()
+        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+
+  tests:
+    name: Test
+    needs: [clippy, check, docs]
+    runs-on: ubuntu-latest-16-cores
+    timeout-minutes: 30
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install Rust compilation prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup target add wasm32-unknown-unknown --toolchain stable
+          rustup toolchain install nightly --profile minimal --no-self-update
+          rustup component add rustfmt clippy --toolchain nightly
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - name: Run tests
+        run: cargo test
+      - if: failure()
+        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4

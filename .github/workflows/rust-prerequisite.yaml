@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-
       - name: Install Rust compilation prerequisites
         run: |
           sudo apt update

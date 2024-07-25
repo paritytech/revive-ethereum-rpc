@@ -20,6 +20,8 @@ jobs:
     name: Cargo fmt
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
       - name: Call rust-prerequisites
         uses: ./.github/workflows/rust-prerequisites.yml
       - name: Cargo fmt

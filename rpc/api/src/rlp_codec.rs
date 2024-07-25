@@ -2,7 +2,7 @@
 //! See https://eth.wiki/fundamentals/rlp for more information about RLP encoding.
 
 use super::*;
-use ethereum_types::H160;
+use crate::H160;
 use frame::deps::{sp_core::keccak_256, sp_io::crypto::secp256k1_ecdsa_recover};
 use rlp::{Decodable, Encodable};
 

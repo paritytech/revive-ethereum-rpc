@@ -19,7 +19,6 @@ pub mod subxt_client;
 mod tests;
 
 use eth_rpc_api::{rpc_methods::EthRpcServer, *};
-use ethereum_types::{Address, H256, U256};
 
 /// Additional RPC methods, exposed on the RPC server on top of all the eth_xxx methods.
 #[rpc(server, client)]

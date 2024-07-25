@@ -1,9 +1,9 @@
 //! Various adapters for the RPC types.
+use crate::H160;
 use crate::{
     Bytes, GenericTransaction, ReceiptInfo, TransactionInfo, TransactionLegacySigned,
     TransactionLegacyUnsigned, U256,
 };
-use ethereum_types::H160;
 use frame::prelude::*;
 
 impl TransactionLegacyUnsigned {

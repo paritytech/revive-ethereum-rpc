@@ -42,20 +42,28 @@ jobs:
       - if: failure()
         uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
 
-  # machete:
-  #   name: Check unused dependencies
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Call rust-prerequisites
-  #       uses: ./.github/workflows/rust-prerequisites.yml
-  #     - name: Install cargo-machete
-  #       run: cargo install cargo-machete
-  #     - name: Check unused dependencies
-  #       uses: actions-rs/cargo@v1.0.3
-  #       with:
-  #         command: machete
-  #     - if: failure()
-  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+  machete:
+    name: Check unused dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Rust compilation prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup target add wasm32-unknown-unknown --toolchain stable
+          rustup toolchain install nightly --profile minimal --no-self-update
+          rustup component add rustfmt clippy --toolchain nightly
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - name: Install cargo-machete
+        run: cargo install cargo-machete
+      - name: Check unused dependencies
+        uses: actions-rs/cargo@v1.0.3
+        with:
+          command: machete
+      - if: failure()
+        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
   #
   # clippy:
   #   name: Cargo clippy

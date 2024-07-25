@@ -33,7 +33,7 @@ make node
 
 ## Start the RPC server
 
-This command starts the rpc proxy, by default it runs on `localhost:9090`
+This command starts the Ethereum JSON-RPC server, by default it runs on `localhost:9090`
 
 ```bash
 make rpc
@@ -62,7 +62,7 @@ You can use the following instructions to setup [MetaMask](https://metamask.io) 
 To interact with the local chain, you need to add a new network in [MetaMask](https://metamask.io).
 See [here](https://support.metamask.io/networks-and-sidechains/managing-networks/how-to-add-a-custom-network-rpc/#adding-a-network-manually) for more info on how to add a custom network.
 
-Make sure the node and the proxy are started, and use the following settings to configure the network (MetaMask > Networks > Add a network manually):
+Make sure the node and the rpc server are started, and use the following settings to configure the network (MetaMask > Networks > Add a network manually):
   
 - Network name: Revive demo
 - RPC URL: <http://localhost:9090>

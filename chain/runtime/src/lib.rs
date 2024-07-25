@@ -52,7 +52,10 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
 pub fn native_version() -> NativeVersion {
-    NativeVersion { runtime_version: VERSION, can_author_with: Default::default() }
+    NativeVersion {
+        runtime_version: VERSION,
+        can_author_with: Default::default(),
+    }
 }
 
 /// The signed extensions that are added to the runtime.
@@ -168,8 +171,8 @@ parameter_types! {
 }
 
 /// A struct implementing the [`AddressGenerator`] trait, which derives the contract's address
-/// using the shared [`evm_contract_address`] function. This function is utilized by both the runtime
-/// and the proxy to ensure consistent contract address derivation.
+/// using the shared [`evm_contract_address`] function. This function is used by both the runtime
+/// and the Ethereum JSON-RPC server to ensure consistent contract address derivation.
 pub struct EvmAddressGenerator;
 impl AddressGenerator<Runtime> for EvmAddressGenerator {
     fn contract_address(
@@ -302,7 +305,7 @@ impl<T: WeightToFee<Balance: Into<u128>>>
                     chain_id,
                 );
                 Ok((tx.into(), source, extra))
-            },
+            }
             RuntimeCall::ContractsEvm(pallet_contracts_evm::Call::eth_call {
                 source,
                 to,
@@ -334,7 +337,7 @@ impl<T: WeightToFee<Balance: Into<u128>>>
                 );
 
                 Ok((tx.into(), source, extra))
-            },
+            }
             _ => Err(InvalidTransaction::Call),
         }
     }

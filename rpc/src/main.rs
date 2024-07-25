@@ -1,7 +1,5 @@
-//! Starts the rpc server.
-//!
-//! TODO make the binary configurable with `clap` so we can customize the src chains, logs and
-//! telemetry
+//! The Ethereum JSON-RPC server.
+//! The API is generated in [`eth_rpc_api::EthRpcServer`] from the Ethereum specs and is
 use clap::Parser;
 use eth_rpc::{client::Client, EthRpcServerImpl, MiscRpcServer, MiscRpcServerImpl};
 use eth_rpc_api::rpc_methods::{EthRpcClient, EthRpcServer};
@@ -83,7 +81,10 @@ mod dev {
 
             async move {
                 let resp = service.call(req).await;
-                log::info!("method: {method} params: {params}, success: {}", resp.is_success());
+                log::info!(
+                    "method: {method} params: {params}, success: {}",
+                    resp.is_success()
+                );
                 resp
             }
             .boxed()

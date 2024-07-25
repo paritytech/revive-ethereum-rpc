@@ -8,7 +8,7 @@ version = "0.1.0"
 
 # add a bin section to run the main function
 [[bin]]
-name = "eth-rpc-proxy"
+name = "eth-rpc"
 path = "src/main.rs"
 
 [[example]]

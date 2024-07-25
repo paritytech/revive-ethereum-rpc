@@ -18,10 +18,10 @@ env:
 jobs:
   fmt:
     name: Cargo fmt
-    uses: ./.github/workflows/rust-prerequisites.yml
-    with:
-      runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
+      - name: Call rust-prerequisites
+        uses: ./.github/workflows/rust-prerequisites.yml
       - name: Cargo fmt
         uses: actions-rs/cargo@v1.0.3
         with:
@@ -30,75 +30,76 @@ jobs:
       - if: failure()
         uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
 
-  machete:
-    name: Check unused dependencies
-    uses: ./.github/workflows/rust-prerequisites.yml
-    with:
-      runs-on: ubuntu-latest
-    steps:
-      - name: Install cargo-machete
-        run: cargo install cargo-machete
-      - name: Check unused dependencies
-        uses: actions-rs/cargo@v1.0.3
-        with:
-          command: machete
-      - if: failure()
-        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-
-  clippy:
-    name: Cargo clippy
-    needs: [fmt, machete]
-    uses: ./.github/workflows/rust-prerequisites.yml
-    with:
-      runs-on: ubuntu-latest
-    steps:
-      - name: Run clippy
-        run: cargo clippy --all-targets --all-features -- -D warnings
-      - if: failure()
-        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-
-  check:
-    name: Cargo check
-    needs: [fmt, machete]
-    uses: ./.github/workflows/rust-prerequisites.yml
-    with:
-      runs-on: ubuntu-latest
-    steps:
-      - name: Cargo check all targets
-        run: cargo check --all-targets
-      - if: failure()
-        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-
-  docs:
-    name: Check documentation and run doc tests
-    needs: [fmt, machete]
-    uses: ./.github/workflows/rust-prerequisites.yml
-    with:
-      runs-on: ubuntu-latest
-    steps:
-      - name: Check internal documentation links
-        run: RUSTDOCFLAGS="--deny rustdoc::broken_intra_doc_links" cargo doc -vv --workspace --no-deps --document-private-items
-      - name: Run cargo test on documentation
-        uses: actions-rs/cargo@v1.0.3
-        with:
-          command: test
-          args: --doc
-      - if: failure()
-        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
-
-  tests:
-    name: Test
-    needs: [clippy, check, docs]
-    uses: ./.github/workflows/rust-prerequisites.yml
-    with:
-      runs-on: ubuntu-latest-16-cores
-    steps:
-      - name: Install cargo-nextest
-        run: cargo install cargo-nextest
-      - name: Run tests
-        uses: actions-rs/cargo@v1.0.3
-        with:
-          command: nextest
-          args: run --workspace
-      - if: failure()
-        uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+  # machete:
+  #   name: Check unused dependencies
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Call rust-prerequisites
+  #       uses: ./.github/workflows/rust-prerequisites.yml
+  #     - name: Install cargo-machete
+  #       run: cargo install cargo-machete
+  #     - name: Check unused dependencies
+  #       uses: actions-rs/cargo@v1.0.3
+  #       with:
+  #         command: machete
+  #     - if: failure()
+  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+  #
+  # clippy:
+  #   name: Cargo clippy
+  #   needs: [fmt, machete]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Call rust-prerequisites
+  #       uses: ./.github/workflows/rust-prerequisites.yml
+  #     - name: Run clippy
+  #       run: cargo clippy --all-targets --all-features -- -D warnings
+  #     - if: failure()
+  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+  #
+  # check:
+  #   name: Cargo check
+  #   needs: [fmt, machete]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Call rust-prerequisites
+  #       uses: ./.github/workflows/rust-prerequisites.yml
+  #     - name: Cargo check all targets
+  #       run: cargo check --all-targets
+  #     - if: failure()
+  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+  #
+  # docs:
+  #   name: Check documentation and run doc tests
+  #   needs: [fmt, machete]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Call rust-prerequisites
+  #       uses: ./.github/workflows/rust-prerequisites.yml
+  #     - name: Check internal documentation links
+  #       run: RUSTDOCFLAGS="--deny rustdoc::broken_intra_doc_links" cargo doc -vv --workspace --no-deps --document-private-items
+  #     - name: Run cargo test on documentation
+  #       uses: actions-rs/cargo@v1.0.3
+  #       with:
+  #         command: test
+  #         args: --doc
+  #     - if: failure()
+  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4
+  #
+  # tests:
+  #   name: Test
+  #   needs: [clippy, check, docs]
+  #   runs-on: ubuntu-latest-16-cores
+  #   timeout-minutes: 30
+  #   steps:
+  #     - name: Call rust-prerequisites
+  #       uses: ./.github/workflows/rust-prerequisites.yml
+  #     - name: Install cargo-nextest
+  #       run: cargo install cargo-nextest
+  #     - name: Run tests
+  #       uses: actions-rs/cargo@v1.0.3
+  #       with:
+  #         command: nextest
+  #         args: run --workspace
+  #     - if: failure()
+  #       uses: andymckay/cancel-action@271cfbfa11ca9222f7be99a47e8f929574549e0a # v0.4

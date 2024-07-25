@@ -36,12 +36,13 @@ impl Verify for MultiSignature {
             (Self::Ecdsa(ref sig), who) => {
                 let m = sp_io::hashing::blake2_256(msg.get());
                 match sp_io::crypto::secp256k1_ecdsa_recover_compressed(sig.as_ref(), &m) {
-                    Ok(pubkey) =>
-                        &sp_io::hashing::blake2_256(pubkey.as_ref()) ==
-                            <dyn AsRef<[u8; 32]>>::as_ref(who),
+                    Ok(pubkey) => {
+                        &sp_io::hashing::blake2_256(pubkey.as_ref())
+                            == <dyn AsRef<[u8; 32]>>::as_ref(who)
+                    }
                     _ => false,
                 }
-            },
+            }
             _ => false,
         }
     }

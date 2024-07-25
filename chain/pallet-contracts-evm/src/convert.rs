@@ -40,7 +40,10 @@ where
         if b.is_zero() {
             return Some(b);
         }
-        if !b.checked_rem(&Into::<Balance>::into(DECIMALS_VALUE))?.is_zero() {
+        if !b
+            .checked_rem(&Into::<Balance>::into(DECIMALS_VALUE))?
+            .is_zero()
+        {
             log::error!("Failed to convert EVM balance: {b:?}, ratio: {DECIMALS_VALUE:?}");
             return None;
         }
@@ -57,7 +60,10 @@ fn convert_works() {
 
     let evm_value = C::convert_decimals_to_evm(native_value);
     assert_eq!(evm_value, 1_000_000);
-    assert_eq!(native_value, C::convert_decimals_from_evm(evm_value).unwrap());
+    assert_eq!(
+        native_value,
+        C::convert_decimals_from_evm(evm_value).unwrap()
+    );
     assert!(C::convert_decimals_from_evm(evm_value + 1).is_none());
 
     assert_eq!(C::convert_decimals_to_evm(0), 0);

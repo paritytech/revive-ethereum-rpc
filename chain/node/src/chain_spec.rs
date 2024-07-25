@@ -32,13 +32,16 @@ fn props() -> Properties {
 }
 
 pub fn development_config() -> Result<ChainSpec, String> {
-    Ok(ChainSpec::builder(WASM_BINARY.expect("Development wasm not available"), Default::default())
-        .with_name("Development")
-        .with_id("dev")
-        .with_chain_type(ChainType::Development)
-        .with_genesis_config_patch(testnet_genesis())
-        .with_properties(props())
-        .build())
+    Ok(ChainSpec::builder(
+        WASM_BINARY.expect("Development wasm not available"),
+        Default::default(),
+    )
+    .with_name("Development")
+    .with_id("dev")
+    .with_chain_type(ChainType::Development)
+    .with_genesis_config_patch(testnet_genesis())
+    .with_properties(props())
+    .build())
 }
 
 /// Configure initial storage state for FRAME pallets.

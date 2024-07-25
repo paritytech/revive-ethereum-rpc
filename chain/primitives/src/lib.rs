@@ -39,7 +39,13 @@ pub fn evm_contract_address(
     input_data: &[u8],
     salt: &[u8],
 ) -> H160 {
-    let entropy = (b"contract_addr_v1", deploying_address, code_hash, input_data, salt)
+    let entropy = (
+        b"contract_addr_v1",
+        deploying_address,
+        code_hash,
+        input_data,
+        salt,
+    )
         .using_encoded(Hashing::hash);
     Decode::decode(&mut TrailingZeroInput::new(entropy.as_ref()))
         .expect("infinite length input; no invalid inputs for type; qed")

@@ -50,7 +50,10 @@ impl<Call: TypeInfo, Extra: SignedExtension, ConvertEthTx> Extrinsic
                 PhantomData,
             )
         } else {
-            Self(generic::UncheckedExtrinsic::new_unsigned(function), PhantomData)
+            Self(
+                generic::UncheckedExtrinsic::new_unsigned(function),
+                PhantomData,
+            )
         })
     }
 }
@@ -96,7 +99,9 @@ where
 
                 log::trace!(target: "evm", "Received ethereum transaction: {msg:#?}");
 
-                let signer = msg.recover_signer(&sig).ok_or(InvalidTransaction::BadProof)?;
+                let signer = msg
+                    .recover_signer(&sig)
+                    .ok_or(InvalidTransaction::BadProof)?;
                 if signer != source {
                     log::trace!(target: "evm", "Invalid recovered signer: ({signer:?}) != source ({source:?}");
                     return Err(InvalidTransaction::BadProof.into());
@@ -113,8 +118,11 @@ where
                 }
 
                 log::trace!(target: "evm", "Valid ethereum message");
-                Ok(CheckedExtrinsic { signed: Some((account_id, eth_extra)), function })
-            },
+                Ok(CheckedExtrinsic {
+                    signed: Some((account_id, eth_extra)),
+                    function,
+                })
+            }
             _ => self.0.check(lookup),
         }
     }

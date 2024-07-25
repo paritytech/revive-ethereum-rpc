@@ -23,7 +23,12 @@ impl TransactionLegacySigned {
             .map(|chain_id| chain_id * 2 + 35 + recovery_id.to_i32() as u32)
             .unwrap_or_else(|| U256::from(27) + recovery_id.to_i32() as u32);
 
-        TransactionLegacySigned { transaction_legacy_unsigned, r, s, v }
+        TransactionLegacySigned {
+            transaction_legacy_unsigned,
+            r,
+            s,
+            v,
+        }
     }
 
     /// Get the [`RecoverableSignature`] from the signed transaction.

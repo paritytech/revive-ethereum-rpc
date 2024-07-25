@@ -284,10 +284,10 @@ where
                     };
 
                     return Ok(info);
-                },
+                }
                 Some(code_hash) => {
                     log::trace!(target: "evm", "eth_call contract {to:?} code_hash: {code_hash:?}");
-                },
+                }
             }
         }
 
@@ -339,7 +339,7 @@ where
                     storage_deposit_limit: Some(result.storage_deposit.charge_or_zero()),
                     return_data,
                 }
-            },
+            }
             Some(address) => {
                 let dest = T::AddressMapping::get_account_id(&address);
 
@@ -369,7 +369,7 @@ where
                     storage_deposit_limit: Some(result.storage_deposit.charge_or_zero()),
                     return_data: exec_result.data,
                 }
-            },
+            }
         };
 
         log::trace!(target: "evm", "gas_estimate: {dry_run_info:?}");
@@ -397,7 +397,7 @@ impl<T: Config> StaticLookup for Pallet<T> {
             MultiAddress::Id(id) => Ok(id),
             MultiAddress::Address20(i) => {
                 Ok(T::AddressMapping::get_account_id(&H160::from_slice(&i)))
-            },
+            }
             _ => Err(LookupError),
         }
     }

@@ -42,7 +42,8 @@ mod hex_serde {
         }
         fn from_hex(s: String) -> Result<Self, Self::Error> {
             let data = hex::decode(s.trim_start_matches("0x"))?;
-            data.try_into().map_err(|_| hex::FromHexError::InvalidStringLength)
+            data.try_into()
+                .map_err(|_| hex::FromHexError::InvalidStringLength)
         }
     }
 

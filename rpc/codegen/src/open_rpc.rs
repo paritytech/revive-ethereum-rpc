@@ -127,17 +127,26 @@ pub struct Info {
 #[serde(rename_all = "camelCase")]
 pub struct Contact {
     /// The identifying name of the contact person/organization.
-    #[cfg_attr(feature = "serde", serde(default, skip_serializing_if = "Option::is_none"))]
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "Option::is_none")
+    )]
     pub name: Option<String>,
     /// The URL pointing to the contact information.
     ///
     /// This must contain an URL.
-    #[cfg_attr(feature = "serde", serde(default, skip_serializing_if = "Option::is_none"))]
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "Option::is_none")
+    )]
     pub url: Option<String>,
     /// The email address of the contact person/organization.
     ///
     /// This must contain an email address.
-    #[cfg_attr(feature = "serde", serde(default, skip_serializing_if = "Option::is_none"))]
+    #[cfg_attr(
+        feature = "serde",
+        serde(default, skip_serializing_if = "Option::is_none")
+    )]
     pub email: Option<String>,
 }
 
@@ -709,7 +718,11 @@ pub struct Components {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub errors: BTreeMap<String, Error>,
     /// A list of reusable [`ExamplePairing`]s.
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty", rename = "examplePairingObjects")]
+    #[serde(
+        default,
+        skip_serializing_if = "BTreeMap::is_empty",
+        rename = "examplePairingObjects"
+    )]
     pub example_pairings: BTreeMap<String, ExamplePairing>,
     /// A list of reusable [`Tag`]s.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]

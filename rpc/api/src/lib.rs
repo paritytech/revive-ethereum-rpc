@@ -21,5 +21,4 @@ mod rpc_types;
 pub use rpc_types::*;
 
 pub mod adapters;
-pub mod rpc_methods;
 pub mod signature;

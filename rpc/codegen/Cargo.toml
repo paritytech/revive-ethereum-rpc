@@ -1,5 +1,5 @@
 [package]
-name = "eth-rpc-api_codegen"
+name = "eth-rpc-codegen"
 version.workspace = true
 edition.workspace = true
 
@@ -14,4 +14,9 @@ anyhow.workspace = true
 [dev-dependencies]
 pretty_assertions.workspace = true
 
+[features]
+default = ["std"]
+std = [
+	"serde_json/std"
+]
 

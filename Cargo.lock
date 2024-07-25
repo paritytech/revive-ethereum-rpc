@@ -2216,7 +2216,6 @@ dependencies = [
  "ethereum-types",
  "hex",
  "hex-literal",
- "jsonrpsee 0.24.0",
  "parity-scale-codec",
  "polkadot-sdk-frame",
  "pretty_assertions",
@@ -2228,7 +2227,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "eth-rpc-api_codegen"
+name = "eth-rpc-codegen"
 version = "0.1.0"
 dependencies = [
  "Inflector",

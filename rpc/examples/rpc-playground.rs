@@ -1,5 +1,6 @@
 use eth_rpc::example::Account;
-use eth_rpc_api::{rpc_methods::*, BlockTag};
+use eth_rpc::EthRpcClient;
+use eth_rpc_api::BlockTag;
 use jsonrpsee::http_client::HttpClientBuilder;
 
 #[tokio::main]

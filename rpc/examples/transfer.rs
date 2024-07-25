@@ -1,5 +1,6 @@
 use eth_rpc::example::Account;
-use eth_rpc_api::{rpc_methods::*, BlockTag, Bytes, H160};
+use eth_rpc::EthRpcClient;
+use eth_rpc_api::{BlockTag, Bytes, H160};
 use hex_literal::hex;
 use jsonrpsee::http_client::HttpClientBuilder;
 

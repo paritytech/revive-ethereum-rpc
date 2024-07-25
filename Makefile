@@ -26,5 +26,5 @@ example_transfer:
 	RUST_LOG=info cargo run --manifest-path rpc/Cargo.toml --features example --example transfer
 
 codegen: 
-	cargo run -p eth-rpc-api_codegen
+	cargo run -p eth-rpc-codegen
 	cargo +nightly fmt

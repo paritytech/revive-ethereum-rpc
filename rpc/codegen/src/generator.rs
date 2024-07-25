@@ -185,7 +185,6 @@ impl TypeGenerator {
         let mut code = indoc! {r###"
             //! Generated JSON-RPC methods.
             #![allow(missing_docs)]
-            #![cfg(feature = "std")]
 
             use crate::*;
             use jsonrpsee::core::RpcResult;

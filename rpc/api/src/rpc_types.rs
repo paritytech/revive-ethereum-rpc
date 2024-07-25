@@ -1,7 +1,8 @@
 //! Generated JSON-RPC types.
 #![allow(missing_docs)]
 
-use crate::{byte::*, Type0, Type1, Type2};
+use crate::byte::*;
+use crate::{Type0, Type1, Type2};
 use derive_more::{From, TryInto};
 pub use ethereum_types::*;
 use frame::derive::{Decode, Encode, TypeInfo};
@@ -167,8 +168,7 @@ pub struct GenericTransaction {
     #[serde(rename = "maxFeePerBlobGas", skip_serializing_if = "Option::is_none")]
     pub max_fee_per_blob_gas: Option<U256>,
     /// max fee per gas
-    /// The maximum total fee per gas the sender is willing to pay (includes the network / base fee
-    /// and miner / priority fee) in wei
+    /// The maximum total fee per gas the sender is willing to pay (includes the network / base fee and miner / priority fee) in wei
     #[serde(rename = "maxFeePerGas", skip_serializing_if = "Option::is_none")]
     pub max_fee_per_gas: Option<U256>,
     /// max priority fee per gas
@@ -197,13 +197,11 @@ pub struct GenericTransaction {
 )]
 pub struct ReceiptInfo {
     /// blob gas price
-    /// The actual value per gas deducted from the sender's account for blob gas. Only specified
-    /// for blob transactions as defined by EIP-4844.
+    /// The actual value per gas deducted from the sender's account for blob gas. Only specified for blob transactions as defined by EIP-4844.
     #[serde(rename = "blobGasPrice", skip_serializing_if = "Option::is_none")]
     pub blob_gas_price: Option<U256>,
     /// blob gas used
-    /// The amount of blob gas used for this specific transaction. Only specified for blob
-    /// transactions as defined by EIP-4844.
+    /// The amount of blob gas used for this specific transaction. Only specified for blob transactions as defined by EIP-4844.
     #[serde(rename = "blobGasUsed", skip_serializing_if = "Option::is_none")]
     pub blob_gas_used: Option<U256>,
     /// block hash
@@ -221,9 +219,7 @@ pub struct ReceiptInfo {
     #[serde(rename = "cumulativeGasUsed")]
     pub cumulative_gas_used: U256,
     /// effective gas price
-    /// The actual value per gas deducted from the sender's account. Before EIP-1559, this is equal
-    /// to the transaction's gas price. After, it is equal to baseFeePerGas + min(maxFeePerGas -
-    /// baseFeePerGas, maxPriorityFeePerGas).
+    /// The actual value per gas deducted from the sender's account. Before EIP-1559, this is equal to the transaction's gas price. After, it is equal to baseFeePerGas + min(maxFeePerGas - baseFeePerGas, maxPriorityFeePerGas).
     #[serde(rename = "effectiveGasPrice")]
     pub effective_gas_price: U256,
     /// from
@@ -238,13 +234,11 @@ pub struct ReceiptInfo {
     #[serde(rename = "logsBloom")]
     pub logs_bloom: Bytes256,
     /// state root
-    /// The post-transaction state root. Only specified for transactions included before the
-    /// Byzantium upgrade.
+    /// The post-transaction state root. Only specified for transactions included before the Byzantium upgrade.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub root: Option<H256>,
     /// status
-    /// Either 1 (success) or 0 (failure). Only specified for transactions included after the
-    /// Byzantium upgrade.
+    /// Either 1 (success) or 0 (failure). Only specified for transactions included after the Byzantium upgrade.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<U256>,
     /// to
@@ -303,15 +297,7 @@ impl Default for TransactionUnsigned {
 pub type AccessList = Vec<AccessListEntry>;
 
 /// Block tag
-/// `earliest`: The lowest numbered block the client has available; `finalized`: The most recent
-/// crypto-economically secure block, cannot be re-orged outside of manual intervention driven by
-/// community coordination; `safe`: The most recent block that is safe from re-orgs under honest
-/// majority and certain synchronicity assumptions; `latest`: The most recent block in the canonical
-/// chain observed by the client, this block may be re-orged out of the canonical chain even under
-/// healthy/normal conditions; `pending`: A sample next block built by the client on top of `latest`
-/// and containing the set of transactions usually taken from local mempool. Before the merge
-/// transition is finalized, any call querying for `finalized` or `safe` block MUST be responded to
-/// with `-39001: Unknown block` error
+/// `earliest`: The lowest numbered block the client has available; `finalized`: The most recent crypto-economically secure block, cannot be re-orged outside of manual intervention driven by community coordination; `safe`: The most recent block that is safe from re-orgs under honest majority and certain synchronicity assumptions; `latest`: The most recent block in the canonical chain observed by the client, this block may be re-orged out of the canonical chain even under healthy/normal conditions; `pending`: A sample next block built by the client on top of `latest` and containing the set of transactions usually taken from local mempool. Before the merge transition is finalized, any call querying for `finalized` or `safe` block MUST be responded to with `-39001: Unknown block` error
 #[derive(
     Debug, Default, Clone, Encode, Decode, TypeInfo, Serialize, Deserialize, Eq, PartialEq,
 )]
@@ -395,16 +381,13 @@ pub struct Transaction1559Unsigned {
     /// gas limit
     pub gas: U256,
     /// gas price
-    /// The effective gas price paid by the sender in wei. For transactions not yet included in a
-    /// block, this value should be set equal to the max fee per gas. This field is DEPRECATED,
-    /// please transition to using effectiveGasPrice in the receipt object going forward.
+    /// The effective gas price paid by the sender in wei. For transactions not yet included in a block, this value should be set equal to the max fee per gas. This field is DEPRECATED, please transition to using effectiveGasPrice in the receipt object going forward.
     #[serde(rename = "gasPrice")]
     pub gas_price: U256,
     /// input data
     pub input: Bytes,
     /// max fee per gas
-    /// The maximum total fee per gas the sender is willing to pay (includes the network / base fee
-    /// and miner / priority fee) in wei
+    /// The maximum total fee per gas the sender is willing to pay (includes the network / base fee and miner / priority fee) in wei
     #[serde(rename = "maxFeePerGas")]
     pub max_fee_per_gas: U256,
     /// max priority fee per gas
@@ -478,8 +461,7 @@ pub struct Transaction4844Unsigned {
     #[serde(rename = "maxFeePerBlobGas")]
     pub max_fee_per_blob_gas: U256,
     /// max fee per gas
-    /// The maximum total fee per gas the sender is willing to pay (includes the network / base fee
-    /// and miner / priority fee) in wei
+    /// The maximum total fee per gas the sender is willing to pay (includes the network / base fee and miner / priority fee) in wei
     #[serde(rename = "maxFeePerGas")]
     pub max_fee_per_gas: U256,
     /// max priority fee per gas
@@ -577,8 +559,7 @@ pub struct Transaction1559Signed {
     /// s
     pub s: U256,
     /// v
-    /// For backwards compatibility, `v` is optionally provided as an alternative to `yParity`.
-    /// This field is DEPRECATED and all use of it should migrate to `yParity`.
+    /// For backwards compatibility, `v` is optionally provided as an alternative to `yParity`. This field is DEPRECATED and all use of it should migrate to `yParity`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub v: Option<U256>,
     /// yParity
@@ -599,8 +580,7 @@ pub struct Transaction2930Signed {
     /// s
     pub s: U256,
     /// v
-    /// For backwards compatibility, `v` is optionally provided as an alternative to `yParity`.
-    /// This field is DEPRECATED and all use of it should migrate to `yParity`.
+    /// For backwards compatibility, `v` is optionally provided as an alternative to `yParity`. This field is DEPRECATED and all use of it should migrate to `yParity`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub v: Option<U256>,
     /// yParity

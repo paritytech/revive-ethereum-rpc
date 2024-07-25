@@ -1,5 +1,6 @@
 use eth_rpc::example::Account;
-use eth_rpc_api::{adapters, rpc_methods::*, Bytes, U256};
+use eth_rpc::EthRpcClient;
+use eth_rpc_api::{adapters, Bytes, U256};
 use frame::{prelude::Encode, traits::Hash};
 use jsonrpsee::http_client::HttpClientBuilder;
 

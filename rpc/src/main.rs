@@ -1,8 +1,9 @@
 //! The Ethereum JSON-RPC server.
 //! The API is generated in [`eth_rpc_api::EthRpcServer`] from the Ethereum specs and is
 use clap::Parser;
-use eth_rpc::{client::Client, EthRpcServerImpl, MiscRpcServer, MiscRpcServerImpl};
-use eth_rpc_api::rpc_methods::{EthRpcClient, EthRpcServer};
+use eth_rpc::{
+    client::Client, EthRpcClient, EthRpcServer, EthRpcServerImpl, MiscRpcServer, MiscRpcServerImpl,
+};
 use hyper::Method;
 use jsonrpsee::{
     http_client::HttpClientBuilder,

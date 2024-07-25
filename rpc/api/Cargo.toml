@@ -18,7 +18,6 @@ serde = { workspace = true, features = ["alloc", "derive"] }
 ethereum-types = { workspace = true,  features = ["serialize", "codec", "rlp"], default-features = false }
 rlp = { workspace = true, default-features = false }
 hex = { workspace = true, default-features = false }
-jsonrpsee = { workspace = true, optional = true }
 secp256k1 = { workspace = true, features = ["recovery"], optional = true }
 derive_more.workspace = true
 parity-scale-codec = { workspace = true, features = ["derive"], default-features = false }
@@ -33,7 +32,6 @@ pretty_assertions.workspace = true
 default = ["std"]
 std = [
 	"secp256k1",
-	"jsonrpsee",
 	"parity-scale-codec/std",
 	"scale-info/std",
 	"rlp/std",

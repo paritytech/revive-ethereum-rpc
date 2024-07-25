@@ -1,8 +1,9 @@
 //! Generated JSON-RPC methods.
-#![cfg(feature = "std")]
+#![allow(missing_docs)]
 
 use crate::*;
-use jsonrpsee::{core::RpcResult, proc_macros::rpc};
+use jsonrpsee::core::RpcResult;
+use jsonrpsee::proc_macros::rpc;
 
 #[rpc(server, client)]
 pub trait EthRpc {
@@ -26,8 +27,7 @@ pub trait EthRpc {
     #[method(name = "eth_chainId")]
     async fn chain_id(&self) -> RpcResult<U256>;
 
-    /// Generates and returns an estimate of how much gas is necessary to allow the transaction to
-    /// complete.
+    /// Generates and returns an estimate of how much gas is necessary to allow the transaction to complete.
     #[method(name = "eth_estimateGas")]
     async fn estimate_gas(
         &self,
@@ -125,8 +125,7 @@ pub trait EthRpc {
         transaction_hash: H256,
     ) -> RpcResult<Option<ReceiptInfo>>;
 
-    /// Submits a raw transaction. For EIP-4844 transactions, the raw form must be the network form.
-    /// This means it includes the blobs, KZG commitments, and KZG proofs.
+    /// Submits a raw transaction. For EIP-4844 transactions, the raw form must be the network form. This means it includes the blobs, KZG commitments, and KZG proofs.
     #[method(name = "eth_sendRawTransaction")]
     async fn send_raw_transaction(&self, transaction: Bytes) -> RpcResult<H256>;
 

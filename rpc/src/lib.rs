@@ -15,10 +15,14 @@ use subxt_client::{runtime_types::sp_weights::weight_v2::Weight, SrcChainConfig}
 use thiserror::Error;
 pub mod client;
 pub mod example;
+
+mod rpc_methods;
+pub use rpc_methods::*;
+
 pub mod subxt_client;
 mod tests;
 
-use eth_rpc_api::{rpc_methods::EthRpcServer, *};
+use eth_rpc_api::*;
 
 /// Additional RPC methods, exposed on the RPC server on top of all the eth_xxx methods.
 #[rpc(server, client)]

@@ -15,15 +15,16 @@ fn main() -> anyhow::Result<()> {
     generator.collect_extra_type("TransactionUnsigned");
 
     let out_dir = if let Ok(dir) = std::env::var("CARGO_MANIFEST_DIR") {
-        Path::new(&dir).join("../api/src")
+        Path::new(&dir).join("..")
     } else {
-        "./rpc/api/src".into()
+        "./rpc".into()
     };
-    let out = std::fs::canonicalize(out_dir.join("rpc_methods.rs"))?;
+
+    let out = std::fs::canonicalize(out_dir.join("src/rpc_methods.rs"))?;
     println!("Generating rpc_methods at {out:?}");
     std::fs::write(out, generator.generate_rpc_methods(&specs)).expect("Unable to write file");
 
-    let out = std::fs::canonicalize(out_dir.join("rpc_types.rs"))?;
+    let out = std::fs::canonicalize(out_dir.join("api/src/rpc_types.rs"))?;
     println!("Generating rpc_types at {out:?}");
     std::fs::write(out, generator.generate_types(&specs)).expect("Unable to write file");
     Ok(())

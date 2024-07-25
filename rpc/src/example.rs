@@ -3,9 +3,10 @@
 
 use std::str::FromStr;
 
+use crate::rpc_methods::EthRpcClient;
 use anyhow::Context;
 use eth_rpc_api::{
-    rlp::*, rpc_methods::*, BlockTag, Bytes, GenericTransaction, TransactionLegacySigned,
+    rlp::*, BlockTag, Bytes, GenericTransaction, TransactionLegacySigned,
     TransactionLegacyUnsigned, H160, H256, U256,
 };
 use frame::deps::sp_core::keccak_256;

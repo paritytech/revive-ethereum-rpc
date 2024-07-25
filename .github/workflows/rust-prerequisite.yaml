@@ -1,7 +1,12 @@
 name: Build Prerequisites
 
+on:
+  workflow_call: {}
+
 jobs:
   setup:
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

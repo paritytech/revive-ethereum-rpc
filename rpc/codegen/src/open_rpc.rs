@@ -14,12 +14,10 @@ pub struct OpenRpc {
     ///
     /// This field should be used by tooling specifications and clients to interpret the OpenRPC
     /// document.
-    #[cfg_attr(feature = "relaxed", serde(default = "serde_fns::openrpc_version"))]
     pub openrpc: String,
     /// Provides metadata about the API.
     ///
     /// This metadata may be used by tooling as required.
-    #[cfg_attr(feature = "relaxed", serde(default = "serde_fns::info"))]
     pub info: Info,
     /// An array of [`Server`] objects, which provide connectivity information to a target server.
     ///
@@ -96,7 +94,7 @@ impl OpenRpc {
 #[serde(rename_all = "camelCase")]
 pub struct Info {
     /// The title of the application.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub title: String,
     /// A verbose description of the application.
     ///
@@ -118,7 +116,7 @@ pub struct Info {
     ///
     /// Note that this is distinct from the `openrpc` field of [`OpenRpc`] which specifies the
     /// version of the OpenRPC Specification used.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub version: String,
 }
 
@@ -155,7 +153,7 @@ pub struct Contact {
 #[serde(rename_all = "camelCase")]
 pub struct License {
     /// The name of the license used for the API.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// The URL pointing to the license used for the API.
     ///
@@ -169,7 +167,7 @@ pub struct License {
 #[serde(rename_all = "camelCase")]
 pub struct Server {
     /// A name to be used as the canonical name for the server.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// A URL to the target host.
     ///
@@ -177,7 +175,6 @@ pub struct Server {
     /// is relative to the location where the OpenRPC document is being served.
     ///
     /// Server Variables are passed into the Runtime Expression to produce a server URL.
-    #[cfg_attr(feature = "relaxed", serde(default = "serde_fns::runtime_expr"))]
     pub url: RuntimeExpression,
     /// A short description of what the server is.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -206,7 +203,7 @@ pub struct ServerVariable {
     ///
     /// Note this behavior is different than the Schema Object's treatment of default values,
     /// because in those cases parameter values are optional.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub default: String,
     /// An optional description for the server variable.
     ///
@@ -225,7 +222,7 @@ pub struct Method {
     /// The canonical name of the method.
     ///
     /// This name must be unique within the methods array.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// A list of tags for API documentation control. Tags can be used for logical grouping
     /// of methods by resources or any other qualifier.
@@ -248,7 +245,7 @@ pub struct Method {
     /// unique.
     ///
     /// All required parameters must be listed *before* any optional parameters.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub params: Vec<RefOr<ContentDescriptor>>,
     /// The description of the result returned by the method.
     ///
@@ -320,7 +317,7 @@ pub struct ContentDescriptor {
     ///
     /// If the content described is a method parameter assignable
     /// [`ByName`](ParamStructure::ByName), this field must be the name of the parameter.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// A short summary of the content that is being described.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -336,7 +333,7 @@ pub struct ContentDescriptor {
     #[serde(default, skip_serializing_if = "serde_fns::is_false")]
     pub required: bool,
     /// A [`Schema`] that describes what is allowed in the content.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub schema: Schema,
     /// Whether the content is deprecated.
     ///
@@ -580,7 +577,7 @@ pub struct ObjectLiteral {
 #[serde(rename_all = "camelCase")]
 pub struct ExamplePairing {
     /// The name for the example pairing.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// A verbose description of the example pairing.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -589,12 +586,12 @@ pub struct ExamplePairing {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub summary: Option<String>,
     /// Example parameters.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub params: Vec<RefOr<ExampleObject>>,
     /// Example result.
     ///
     /// When undefined, shows the usage of the method as a notification.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub result: RefOr<ExampleObject>,
 }
 
@@ -637,7 +634,7 @@ pub enum ExampleValue {
 #[derive(Debug, Clone)]
 pub struct Link {
     /// Canonical name for the link.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// A description of the link.
     ///
@@ -685,12 +682,12 @@ pub struct RuntimeExpression(pub String);
 #[serde(rename_all = "camelCase")]
 pub struct Error {
     /// An application-defined error code.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub code: i64,
     /// A string providing a short description of the error.
     ///
     /// The message should be limited to a concise single sentence.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub message: String,
 }
 
@@ -737,7 +734,7 @@ pub struct Components {
 #[serde(rename_all = "camelCase")]
 pub struct Tag {
     /// The name of the tag.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub name: String,
     /// A short summary of the tag.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -764,7 +761,7 @@ pub struct ExternalDocumentation {
     /// A URL for the target documentation.
     ///
     /// This must contain an URL.
-    #[cfg_attr(feature = "relaxed", serde(default))]
+    #[serde(default)]
     pub url: String,
 }
 

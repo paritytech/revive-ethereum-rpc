@@ -125,26 +125,17 @@ pub struct Info {
 #[serde(rename_all = "camelCase")]
 pub struct Contact {
     /// The identifying name of the contact person/organization.
-    #[cfg_attr(
-        feature = "serde",
-        serde(default, skip_serializing_if = "Option::is_none")
-    )]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     /// The URL pointing to the contact information.
     ///
     /// This must contain an URL.
-    #[cfg_attr(
-        feature = "serde",
-        serde(default, skip_serializing_if = "Option::is_none")
-    )]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
     /// The email address of the contact person/organization.
     ///
     /// This must contain an email address.
-    #[cfg_attr(
-        feature = "serde",
-        serde(default, skip_serializing_if = "Option::is_none")
-    )]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
 }
 

@@ -30,6 +30,7 @@ jobs:
           rustup target add wasm32-unknown-unknown --toolchain stable
           rustup toolchain install nightly --profile minimal --no-self-update
           rustup component add rustfmt clippy --toolchain nightly
+          rustup component add rust-src
       - name: Rust Cache
         uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
       - name: cargo fmt

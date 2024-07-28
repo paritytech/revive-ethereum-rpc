@@ -1,5 +1,6 @@
 //! The [`EthRpcServer`] RPC server implementation
 #![warn(missing_docs)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 use adapters::CallInput;
 use client::{ClientError, GAS_PRICE};

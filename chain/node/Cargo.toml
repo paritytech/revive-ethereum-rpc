@@ -17,38 +17,17 @@ targets = ["x86_64-unknown-linux-gnu"]
 clap.workspace = true
 futures.workspace = true
 futures-timer.workspace = true
-jsonrpsee = { version = "0.22", features = ["server"] }
+jsonrpsee = { version = "0.23.2", features = ["server"] }
 serde_json = { workspace = true, default-features = true }
-sc-cli.workspace = true
-sc-executor.workspace = true
-sc-network.workspace = true
-sc-service.workspace = true
-sc-telemetry.workspace = true
-sc-transaction-pool.workspace = true
-sc-transaction-pool-api.workspace = true
-sc-consensus.workspace = true
-sc-consensus-manual-seal.workspace = true
-sc-rpc-api.workspace = true
-sc-basic-authorship.workspace = true
-sc-offchain.workspace = true
-sc-client-api.workspace = true
-sp-timestamp.workspace = true
-sp-keyring.workspace = true
-sp-api.workspace = true
-sp-blockchain.workspace = true
-sp-block-builder.workspace = true
-sp-io.workspace = true
-sp-runtime.workspace = true
-substrate-frame-rpc-system.workspace = true
+hex-literal.workspace = true
+polkadot-sdk = { workspace = true, features = ["experimental", "node"] }
 
-frame = { workspace = true,  features = ["experimental", "runtime"] }
 runtime = { path = "../runtime" }
 
-
-hex-literal.workspace = true
-
 [build-dependencies]
-substrate-build-script-utils.workspace = true
+polkadot-sdk = { workspace = true, features = ["substrate-build-script-utils"] }
 
 [features]
 default = []
+runtime-benchmarks = ["polkadot-sdk/runtime-benchmarks"]
+try-runtime = ["polkadot-sdk/try-runtime"]

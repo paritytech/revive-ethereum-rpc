@@ -1,12 +1,12 @@
 //! RLP encoding and decoding for Ethereum transactions.
-//! See https://eth.wiki/fundamentals/rlp for more information about RLP encoding.
+//! See <https://eth.wiki/fundamentals/rlp> for more information about RLP encoding.
 
 use super::*;
 use crate::H160;
-use frame::deps::{sp_core::keccak_256, sp_io::crypto::secp256k1_ecdsa_recover};
+use polkadot_sdk::{sp_core::keccak_256, sp_io::crypto::secp256k1_ecdsa_recover};
 use rlp::{Decodable, Encodable};
 
-/// See https://eips.ethereum.org/EIPS/eip-155
+/// See <https://eips.ethereum.org/EIPS/eip-155>
 impl Encodable for TransactionLegacyUnsigned {
     fn rlp_append(&self, s: &mut rlp::RlpStream) {
         if let Some(chain_id) = self.chain_id {
@@ -38,7 +38,7 @@ impl Encodable for TransactionLegacyUnsigned {
     }
 }
 
-/// See https://eips.ethereum.org/EIPS/eip-155
+/// See <https://eips.ethereum.org/EIPS/eip-155>
 impl Decodable for TransactionLegacyUnsigned {
     fn decode(rlp: &rlp::Rlp) -> Result<Self, rlp::DecoderError> {
         Ok(TransactionLegacyUnsigned {
@@ -86,7 +86,7 @@ impl Encodable for TransactionLegacySigned {
     }
 }
 
-/// See https://eips.ethereum.org/EIPS/eip-155
+/// See <https://eips.ethereum.org/EIPS/eip-155>
 impl Decodable for TransactionLegacySigned {
     fn decode(rlp: &rlp::Rlp) -> Result<Self, rlp::DecoderError> {
         let v: U256 = rlp.val_at(6)?;

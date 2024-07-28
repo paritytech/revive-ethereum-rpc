@@ -7,7 +7,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+// 	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,16 @@
 // limitations under the License.
 
 use hex_literal::hex;
+use polkadot_sdk::{
+    sc_service::{ChainType, Properties},
+    sp_keyring::AccountKeyring,
+    *,
+};
 use runtime::{BalancesConfig, ContractsEvmConfig, SudoConfig, NATIVE_DECIMALS, WASM_BINARY};
-use sc_service::{ChainType, Properties};
 use serde_json::{json, Value};
-use sp_keyring::AccountKeyring;
 
 /// This is a specialization of the general Substrate ChainSpec type.
-pub type ChainSpec = sc_service::GenericChainSpec<()>;
+pub type ChainSpec = sc_service::GenericChainSpec;
 
 fn props() -> Properties {
     let mut properties = Properties::new();
@@ -46,7 +49,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
 
 /// Configure initial storage state for FRAME pallets.
 fn testnet_genesis() -> Value {
-    use frame::traits::Get;
+    use polkadot_sdk::polkadot_sdk_frame::traits::Get;
     use runtime::interface::{Balance, MinimumBalance};
     let endowment = <MinimumBalance as Get<Balance>>::get().max(1) * 100_000_000_000_000_000;
     let balances = AccountKeyring::iter()

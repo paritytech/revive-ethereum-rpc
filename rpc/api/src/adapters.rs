@@ -4,7 +4,10 @@ use crate::{
     Bytes, GenericTransaction, ReceiptInfo, TransactionInfo, TransactionLegacySigned,
     TransactionLegacyUnsigned, U256,
 };
-use frame::prelude::*;
+
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
+use polkadot_sdk::polkadot_sdk_frame::prelude::*;
 
 impl TransactionLegacyUnsigned {
     /// Convert a legacy transaction to a [`GenericTransaction`].

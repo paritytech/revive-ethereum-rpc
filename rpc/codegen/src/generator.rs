@@ -225,7 +225,7 @@ impl TypeGenerator {
             use derive_more::{From, TryInto};
             use crate::{Type0, Type1, Type2};
             pub use ethereum_types::*;
-            use frame::derive::{Decode, Encode, TypeInfo};
+            use polkadot_sdk::polkadot_sdk_frame::derive::{Decode, Encode, TypeInfo};
             use serde::{Deserialize, Serialize};
 
             #[cfg(not(feature = "std"))]

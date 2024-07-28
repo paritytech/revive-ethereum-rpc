@@ -9,8 +9,8 @@ use eth_rpc_api::{
     rlp::*, BlockTag, Bytes, GenericTransaction, TransactionLegacySigned,
     TransactionLegacyUnsigned, H160, H256, U256,
 };
-use frame::deps::sp_core::keccak_256;
 use jsonrpsee::http_client::HttpClient;
+use polkadot_sdk::sp_core::keccak_256;
 use secp256k1::{Message, PublicKey, Secp256k1, SecretKey};
 
 /// A simple account that can sign transactions

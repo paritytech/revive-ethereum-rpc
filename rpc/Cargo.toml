@@ -35,12 +35,14 @@ serde_json.workspace = true
 subxt.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["full"] }
-parity-scale-codec = { workspace = true, features = ["derive"], default-features = false }
+parity-scale-codec = { workspace = true, features = [
+	"derive",
+], default-features = false }
 primitives = { package = "pallet-contracts-evm-primitives", path = "../chain/primitives" }
 eth-rpc-api = { path = "./api", features = ["std"] }
 log.workspace = true
 tracing-subscriber.workspace = true
-frame = {workspace = true, default-features = false  }
+polkadot-sdk = { workspace = true, default-features = false }
 secp256k1 = { workspace = true, features = ["recovery"] }
 tower.workspace = true
 tower-http = { workspace = true, features = ["full"] }

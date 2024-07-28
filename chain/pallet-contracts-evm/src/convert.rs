@@ -2,7 +2,7 @@
 use core::marker::PhantomData;
 
 use core::fmt::Debug;
-use frame::{arithmetic::CheckedRem, deps::sp_runtime};
+use polkadot_sdk::polkadot_sdk_frame::{arithmetic::CheckedRem, deps::sp_runtime};
 use sp_runtime::traits::{CheckedDiv, Saturating, Zero};
 
 /// EVM decimals converter trait.

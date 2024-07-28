@@ -7,7 +7,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+// 	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,16 @@
 // limitations under the License.
 
 use futures::FutureExt;
+use polkadot_sdk::{
+    sc_client_api::backend::Backend,
+    sc_executor::WasmExecutor,
+    sc_service::{error::Error as ServiceError, Configuration, TaskManager},
+    sc_telemetry::{Telemetry, TelemetryWorker},
+    sc_transaction_pool_api::OffchainTransactionPoolFactory,
+    sp_runtime::traits::Block as BlockT,
+    *,
+};
 use runtime::{self, interface::OpaqueBlock as Block, RuntimeApi};
-use sc_client_api::backend::Backend;
-use sc_executor::WasmExecutor;
-use sc_service::{error::Error as ServiceError, Configuration, TaskManager};
-use sc_telemetry::{Telemetry, TelemetryWorker};
-use sc_transaction_pool_api::OffchainTransactionPoolFactory;
-use sp_runtime::traits::Block as BlockT;
 use std::sync::Arc;
 
 use crate::cli::Consensus;
@@ -128,7 +131,13 @@ pub fn new_full<Network: sc_network::NetworkBackend<Block, <Block as BlockT>::Ha
         Block,
         <Block as BlockT>::Hash,
         Network,
-    >::new(&config.network);
+    >::new(
+        &config.network,
+        config
+            .prometheus_config
+            .as_ref()
+            .map(|cfg| cfg.registry.clone()),
+    );
     let metrics = Network::register_notification_metrics(
         config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
     );

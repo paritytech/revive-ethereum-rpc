@@ -403,7 +403,7 @@ impl MiscRpcServer for MiscRpcServerImpl {
 }
 
 /// A custom  subxt [`Signer`] that simply provide the existing Ethereum signature.
-/// Once https://github.com/paritytech/subxt/pull/1658 is merged we can just use
+/// Once <https://github.com/paritytech/subxt/pull/1658> is merged we can just use
 /// a [`subxt::tx::PartialExtrinsic`] and call `sign_with_address_and_signature` on it.
 struct EthSigner {
     account_id: <SrcChainConfig as subxt::Config>::AccountId,

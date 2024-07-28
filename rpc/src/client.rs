@@ -5,10 +5,10 @@ use eth_rpc_api::{
     adapters::DryRunInfo, BlockNumberOrTag, BlockNumberOrTagOrHash, Bytes256, GenericTransaction,
     ReceiptInfo, H160, H256, U256,
 };
-use frame::{prelude::Weight, traits::Hash};
 use futures::{stream, StreamExt};
 use jsonrpsee::types::{ErrorCode, ErrorObjectOwned};
 use parity_scale_codec::{Decode, Encode};
+use polkadot_sdk::polkadot_sdk_frame::{prelude::Weight, traits::Hash};
 use std::{
     collections::{HashMap, VecDeque},
     sync::Arc,

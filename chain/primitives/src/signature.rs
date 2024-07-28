@@ -1,18 +1,18 @@
 //! Signature runtime primitives.
-use frame::deps::{
+use parity_scale_codec::{Decode, Encode};
+use polkadot_sdk::{
     sp_core, sp_io,
     sp_runtime::{
         traits::{Lazy, Verify},
         AccountId32, MultiSigner, RuntimeDebug,
     },
 };
-use parity_scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use sp_core::{crypto::ByteArray, ecdsa, ed25519, sr25519};
 
 /// Signature verify that can work with any known signature types.
 ///
-/// This is [`frame::deps::sp_runtime::MultiSignature`], with an extra Ethereum variant.
+/// This is [`polkadot_sdk::sp_runtime::MultiSignature`], with an extra Ethereum variant.
 #[derive(Eq, PartialEq, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
 pub enum MultiSignature {
     /// An Ed25519 signature.

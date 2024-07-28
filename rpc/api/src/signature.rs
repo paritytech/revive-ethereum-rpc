@@ -1,7 +1,7 @@
 //! Ethereum signature utilities
 #![cfg(feature = "std")]
 use crate::{TransactionLegacySigned, TransactionLegacyUnsigned, H160, U256};
-use frame::deps::sp_core::keccak_256;
+use polkadot_sdk::sp_core::keccak_256;
 use rlp::Encodable;
 use secp256k1::{
     ecdsa::{RecoverableSignature, RecoveryId},

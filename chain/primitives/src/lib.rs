@@ -11,13 +11,13 @@ pub use signature::*;
 mod unchecked_extrinsic;
 pub use unchecked_extrinsic::*;
 
-use frame::{
+use parity_scale_codec::Encode;
+use polkadot_sdk::polkadot_sdk_frame::{
     deps::{sp_runtime, sp_runtime::AccountId32},
     derive::Decode,
     primitives::{H160, H256},
     traits::{Hash, TrailingZeroInput},
 };
-use parity_scale_codec::Encode;
 
 /// Some way of identifying an account on the chain.
 pub type AccountId = AccountId32;

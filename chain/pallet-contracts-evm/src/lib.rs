@@ -1,7 +1,16 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
+#[cfg(not(feature = "std"))]
+use alloc::{vec, vec::Vec};
+
 use eth_rpc_api::{adapters::*, GenericTransaction};
-use frame::{
+use frame_system::RawOrigin;
+use parity_scale_codec::{Codec, Decode, Encode, HasCompact};
+use polkadot_sdk::pallet_contracts;
+use polkadot_sdk::polkadot_sdk_frame::{
     deps::sp_runtime::MultiAddress,
     derive::DefaultNoBound,
     prelude::*,
@@ -11,14 +20,12 @@ use frame::{
         fungible::{Inspect, Mutate},
         tokens::Preservation,
     },
+    traits::{LookupError, StaticLookup},
 };
-use frame_system::RawOrigin;
-use parity_scale_codec::{Codec, Decode, Encode, HasCompact};
 
 mod convert;
 pub use convert::*;
 
-use frame::traits::{LookupError, StaticLookup};
 use pallet_contracts::Code;
 use primitives::{self, AccountIndex};
 
@@ -26,6 +33,7 @@ use primitives::{self, AccountIndex};
 pub use pallet::*;
 pub mod weights;
 use pallet_contracts::WeightInfo as PalletContractsWeightInfo;
+use polkadot_sdk::polkadot_sdk_frame as frame;
 use weights::WeightInfo;
 
 type BalanceOf<T> = <<T as pallet_contracts::Config>::Currency as Inspect<
@@ -40,8 +48,8 @@ pub trait AddressMapping<AccountId> {
 
 #[frame::pallet]
 pub mod pallet {
-    use frame::deps::frame_support::dispatch::PostDispatchInfo;
     use pallet_contracts::{CollectEvents, DebugInfo, Determinism};
+    use polkadot_sdk::frame_support::dispatch::PostDispatchInfo;
 
     use super::*;
     use crate::frame_system;
@@ -55,6 +63,7 @@ pub mod pallet {
     }
 
     #[pallet::config]
+    #[pallet::disable_frame_system_supertrait_check]
     pub trait Config: frame_system::Config + pallet_contracts::Config {
         /// Chain ID of EVM.
         #[pallet::constant]

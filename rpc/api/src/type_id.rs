@@ -1,12 +1,12 @@
 //! Ethereum Typed Transaction types
-use frame::deps::codec::{Decode, Encode};
+use polkadot_sdk::polkadot_sdk_frame::deps::codec::{Decode, Encode};
 use scale_info::TypeInfo;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::Byte;
 
 /// A macro to generate Transaction type identifiers
-/// See https://ethereum.org/en/developers/docs/transactions/#typed-transaction-envelope
+/// See <https://ethereum.org/en/developers/docs/transactions/#typed-transaction-envelope>
 macro_rules! transaction_type {
     ($name:ident, $value:literal) => {
         #[doc = concat!("Transaction type identifier: ", $value)]

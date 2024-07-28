@@ -13,11 +13,18 @@ publish = false
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-parity-scale-codec = { workspace = true, features = ["derive"], default-features = false }
-scale-info = { workspace = true, default-features = false, features = ["derive"] }
-frame = {workspace = true, default-features = false, features = ["experimental", "runtime"] }
+parity-scale-codec = { workspace = true, features = [
+	"derive",
+], default-features = false }
+scale-info = { workspace = true, default-features = false, features = [
+	"derive",
+] }
 serde = { workspace = true, features = ["alloc", "derive"] }
 eth-rpc-api = { path = "../../rpc/api", default-features = false }
+polkadot-sdk = { workspace = true, default-features = false, features = [
+	"experimental",
+	"runtime",
+] }
 
 [dev-dependencies]
 serde_json.workspace = true
@@ -25,9 +32,10 @@ serde_json.workspace = true
 [features]
 default = ["std"]
 std = [
+	"eth-rpc-api/std",
 	"parity-scale-codec/std",
-	"frame/std",
+	"polkadot-sdk/std",
 	"scale-info/std",
 	"serde/std",
-	"eth-rpc-api/std",
+	"serde_json/std",
 ]

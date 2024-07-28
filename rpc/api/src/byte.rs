@@ -3,7 +3,7 @@ use core::{
     fmt::{Debug, Display, Formatter, Result as FmtResult},
     str::FromStr,
 };
-use frame::derive::{Decode, Encode, TypeInfo};
+use polkadot_sdk::polkadot_sdk_frame::derive::{Decode, Encode, TypeInfo};
 use serde::{Deserialize, Serialize};
 
 #[cfg(not(feature = "std"))]

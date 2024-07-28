@@ -2,6 +2,12 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
+#[cfg(not(feature = "std"))]
+use alloc::{vec, vec::Vec};
+
 // Make the WASM binary available.
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
@@ -9,7 +15,13 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 use eth_rpc_api::{adapters::*, U256};
 
 use eth_rpc_api::{GenericTransaction, TransactionLegacyUnsigned, TransactionUnsigned};
-use frame::{
+use interface::*;
+use pallet_contracts_evm::{EVMAddressMapping, EVM_DECIMALS};
+use pallet_contracts_evm_primitives::{evm_contract_address, UncheckedExtrinsic};
+use polkadot_sdk::frame_system::limits::BlockWeights;
+use polkadot_sdk::pallet_contracts::AddressGenerator;
+use polkadot_sdk::pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
+use polkadot_sdk::polkadot_sdk_frame::{
     deps::frame_support::{
         genesis_builder_helper::{build_state, get_preset},
         runtime,
@@ -27,14 +39,11 @@ use frame::{
         types_common::BlockNumber,
     },
 };
-use frame::{deps::sp_runtime::transaction_validity::InvalidTransaction, traits::Convert};
-use frame_system::limits::BlockWeights;
-use interface::*;
-use pallet_contracts::AddressGenerator;
-use pallet_contracts_evm::{EVMAddressMapping, EVM_DECIMALS};
-use pallet_contracts_evm_primitives::{evm_contract_address, UncheckedExtrinsic};
-use pallet_transaction_payment::{FeeDetails, RuntimeDispatchInfo};
-use sp_runtime::generic;
+use polkadot_sdk::polkadot_sdk_frame::{
+    deps::sp_runtime::transaction_validity::InvalidTransaction, traits::Convert,
+};
+use polkadot_sdk::sp_runtime::generic;
+use polkadot_sdk::*;
 
 /// The runtime version.
 #[runtime_version]
@@ -566,10 +575,10 @@ impl_runtime_apis! {
 /// Some re-exports that the node side code needs to know. Some are useful in this context as well.
 pub mod interface {
     use super::Runtime;
-    use frame::deps::frame_system;
+    use polkadot_sdk::*;
 
     pub type Block = super::Block;
-    pub use frame::runtime::types_common::OpaqueBlock;
+    pub use polkadot_sdk::polkadot_sdk_frame::runtime::types_common::OpaqueBlock;
     pub type AccountId = <Runtime as frame_system::Config>::AccountId;
     pub type Nonce = <Runtime as frame_system::Config>::Nonce;
     pub type Hash = <Runtime as frame_system::Config>::Hash;

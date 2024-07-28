@@ -1,8 +1,8 @@
 use eth_rpc::example::Account;
 use eth_rpc::EthRpcClient;
 use eth_rpc_api::{adapters, Bytes, U256};
-use frame::{prelude::Encode, traits::Hash};
 use jsonrpsee::http_client::HttpClientBuilder;
+use polkadot_sdk::polkadot_sdk_frame::{prelude::Encode, traits::Hash};
 
 static DUMMY_BYTES: &[u8] = include_bytes!("./dummy.wasm");
 
